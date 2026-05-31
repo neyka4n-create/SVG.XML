@@ -1,0 +1,2557 @@
+<html lang="id"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVG → Alight Motion XML v6 — Full Effects</title>
+
+<style>
+/* ========================================================================= */
+/* 1. FONT DEFINITIONS: PASTE SEMUA KODE @font-face BASE64 KAMU DI SINI      */
+/* (Biarkan bagian ini berisi 5 block @font-face 'Creato Display' milikmu)   */
+/* ========================================================================= */
+
+/* ========================================================================= */
+/* 2. TEMA CSS: LELOMO (ENILIS VLIVER)                                       */
+/* ========================================================================= */
+:root {
+  /* Tema Gelap Lelomo */
+  --bg: #090909;
+  --surf: #121212;
+  --card: #18181b;
+  --card2: #18181b00;
+  --border: #27272a;
+  --border2: #3f3f46;
+  
+  /* Aksen Hijau Neon (#bef02c) */
+  --accent: #bef02c;
+  --accent2: #ffffff;
+  --accent3: #96c020; 
+  --green: #bef02c;
+  --yellow: #facc15;
+  --orange: #f97316;
+  
+  /* Warna Teks */
+  --text: #fafafa;
+  --text-dim: #71717a;
+  --text-mid: #a1a1aa;
+  
+  /* Efek Cahaya */
+  --glow: rgba(190, 240, 44, 0.15);
+  --glow2: rgba(190, 240, 44, 0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow-x: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Creato Display', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ── Latar Belakang & Efek Glow ── */
+.bg-glow {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.bg-glow::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+  top: -150px; left: -100px;
+  animation: floatGlow 12s ease-in-out infinite alternate;
+}
+.bg-glow::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--glow2) 0%, transparent 70%);
+  bottom: -100px; right: -80px;
+  animation: floatGlow 10s ease-in-out infinite alternate-reverse;
+}
+@keyframes floatGlow {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(40px,30px) scale(1.1); }
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(190, 240, 44, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(190, 240, 44, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.app {
+  position: relative; z-index: 1;
+  max-width: 1340px; margin: 0 auto; padding: 0 28px 60px;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 32px 0 26px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+header::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 0;
+  width: 180px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+.logo { display: flex; align-items: center; gap: 16px; }
+.logo-icon {
+  width: 48px; height: 48px;
+  background: var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Creato Display', sans-serif;
+  font-size: 16px; font-weight: 900; color: #000;
+  box-shadow: 0 0 24px var(--glow), inset 0 1px 0 rgba(255,255,255,0.5);
+  letter-spacing: -0.5px;
+  position: relative; overflow: hidden;
+}
+.logo-icon::after {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 200%; }
+}
+.logo-text {
+  font-family: 'Creato Display', sans-serif;
+  font-size: 18px; font-weight: 800;
+  letter-spacing: 3px; color: var(--text);
+  text-transform: uppercase;
+}
+.logo-sub {
+  font-size: 10px; color: var(--text-dim);
+  letter-spacing: 1.5px; margin-top: 3px;
+  font-weight: 300; text-transform: uppercase;
+}
+.badge {
+  background: rgba(190, 240, 44, 0.08);
+  border: 1px solid rgba(190, 240, 44, 0.3);
+  color: var(--accent);
+  font-size: 10px; font-family: 'Creato Display', monospace;
+  font-weight: 700;
+  padding: 7px 16px; border-radius: 24px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  box-shadow: 0 0 20px var(--glow);
+}
+
+/* ── MAIN GRID ── */
+.main {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; margin-top: 24px;
+}
+@media(max-width: 900px) { .main { grid-template-columns: 1fr; } }
+
+/* ── PANELS ── */
+.panel {
+  background: linear-gradient(160deg, rgba(24,24,27,0.95), rgba(18,18,18,0.95));
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: box-shadow 0.3s ease;
+}
+.panel:hover {
+  box-shadow: 0 4px 60px rgba(0,0,0,0.7), 0 0 40px rgba(190,240,44,0.05), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.panel-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.02);
+}
+.panel-head-icon {
+  width: 10px; height: 10px; border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+.panel-head-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 2.5px; color: var(--text);
+  text-transform: uppercase; font-family: 'Creato Display', sans-serif;
+}
+.panel-body { flex: 1; padding: 22px; overflow: auto; }
+
+/* ── DROPZONE ── */
+.dropzone {
+  border: 2px dashed rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 44px 24px;
+  text-align: center; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(190,240,44,0.02);
+  position: relative; overflow: hidden;
+}
+.dropzone::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(190,240,44,0.05) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.dropzone:hover::before, .dropzone.drag-over::before { opacity: 1; }
+.dropzone:hover, .dropzone.drag-over {
+  border-color: var(--accent);
+  background: rgba(190,240,44,0.06);
+  box-shadow: inset 0 0 40px rgba(190,240,44,0.05), 0 0 0 1px rgba(190,240,44,0.2);
+  transform: scale(1.005);
+}
+.dropzone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.dz-icon {
+  font-size: 44px; margin-bottom: 14px;
+  filter: drop-shadow(0 0 14px var(--glow));
+  animation: iconFloat 3s ease-in-out infinite;
+}
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.dz-title {
+  font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px;
+  font-family: 'Creato Display', sans-serif;
+}
+.dz-sub { font-size: 12px; color: var(--text-dim); font-weight: 300; }
+.dz-types {
+  display: inline-block; margin-top: 14px;
+  background: rgba(190,240,44,0.08); border: 1px solid rgba(190,240,44,0.2);
+  color: var(--accent); font-size: 9px; font-family: 'Creato Display', sans-serif;
+  font-weight: 500;
+  padding: 5px 12px; border-radius: 6px; letter-spacing: 0.8px;
+  line-height: 1.7;
+}
+
+/* ── SVG PREVIEW ── */
+#svgPreview {
+  width: 100%; aspect-ratio: 1;
+  border-radius: 12px;
+  background: repeating-conic-gradient(rgba(39,39,42,0.8) 0%, rgba(24,24,27,0.6) 0% 50%) 0 0 / 24px 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+}
+#svgPreview svg { max-width: 100%; max-height: 100%; }
+#svgPreview .empty-label { color: var(--text-dim); font-size: 12px; text-align: center; font-weight: 300; }
+
+/* ── CONVERT BUTTON ── */
+.convert-wrap { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.btn-convert {
+  background: var(--accent);
+  color: #000;
+  border: none; outline: none; cursor: pointer;
+  padding: 16px 28px; border-radius: 12px;
+  font-family: 'Creato Display', sans-serif; font-size: 13px; font-weight: 900;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative; overflow: hidden;
+  box-shadow: 0 6px 28px var(--glow);
+}
+.btn-convert::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+  border-radius: inherit;
+}
+.btn-convert::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: translateX(-200%);
+  transition: transform 0.6s ease;
+}
+.btn-convert:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(190,240,44,0.4); }
+.btn-convert:hover::after { transform: translateX(200%); }
+.btn-convert:active { transform: translateY(0); }
+.btn-convert:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px; font-family: 'Creato Display', sans-serif;
+  color: var(--text-dim); letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+}
+
+/* ── CONTROL ROWS ── */
+.color-row, .stroke-row, .select-row, .checkbox-row, .toggle-row, .slider-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px; margin-bottom: 8px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.color-row:hover, .stroke-row:hover, .select-row:hover,
+.checkbox-row:hover, .toggle-row:hover, .slider-row:hover {
+  border-color: rgba(190,240,44,0.2);
+  background: rgba(190,240,44,0.03);
+}
+.color-row label, .stroke-row label, .select-row label,
+.checkbox-row label, .toggle-row label {
+  font-size: 12px; color: var(--text-mid); flex: 1; font-weight: 500;
+}
+.slider-row { flex-direction: column; gap: 8px; }
+.slider-row .slider-head {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+}
+.slider-row label { font-size: 12px; color: var(--text-mid); font-weight: 500; }
+
+/* ── INPUTS & CHIPS ── */
+input[type=color] {
+  width: 36px; height: 30px; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px; background: none; cursor: pointer; padding: 0;
+  transition: transform 0.15s;
+}
+input[type=color]:hover { transform: scale(1.05); }
+input[type=text], input[type=number], select {
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text);
+  font-family: 'Creato Display', sans-serif; font-size: 12px;
+  padding: 6px 10px; border-radius: 6px;
+  outline: none; transition: border-color 0.2s;
+}
+input[type=text]:focus, input[type=number]:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(190,240,44,0.1);
+}
+input[type=checkbox] {
+  width: 18px; height: 18px; accent-color: var(--accent);
+  cursor: pointer; border-radius: 4px;
+}
+input[type=range] {
+  accent-color: var(--accent); cursor: pointer; width: 100%;
+}
+
+.toggle-chip { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: 10px; padding: 4px 12px; border-radius: 24px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.15); color: var(--text-dim);
+  font-family: 'Creato Display', sans-serif; font-weight: 600;
+  transition: all 0.2s;
+}
+.chip:hover { border-color: rgba(190,240,44,0.4); color: var(--text); }
+.chip.active, .chip-grad.active {
+  background: rgba(190,240,44,0.15); border-color: var(--accent);
+  color: var(--accent); box-shadow: 0 0 12px rgba(190,240,44,0.2);
+}
+
+/* ── CANVAS SETTINGS ── */
+.canvas-settings {
+  background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 14px; padding: 16px; margin-bottom: 14px;
+}
+.canvas-preset-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.canvas-preset-btn {
+  font-size: 10px; padding: 5px 12px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim);
+  font-family: 'Creato Display', sans-serif; font-weight: 600;
+  background: rgba(255,255,255,0.03); transition: all 0.18s;
+  white-space: nowrap; letter-spacing: 0.5px;
+}
+.canvas-preset-btn:hover { border-color: rgba(190,240,44,0.3); color: var(--text); background: rgba(190,240,44,0.05); }
+.canvas-preset-btn.active {
+  background: rgba(190,240,44,0.1); border-color: rgba(190,240,44,0.35); color: var(--accent);
+  box-shadow: 0 0 12px rgba(190,240,44,0.12);
+}
+.canvas-dims-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.canvas-dims-row label { font-size: 11px; color: var(--text-mid); white-space: nowrap; min-width: 50px; font-weight: 500; }
+.canvas-dims-row input[type=number] { width: 90px; text-align: center; font-size: 12px; }
+.canvas-dims-row .dim-sep { color: var(--text-dim); font-size: 16px; font-weight: 300; }
+.canvas-extra-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.canvas-extra-item { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 130px; }
+.canvas-extra-item label { font-size: 11px; color: var(--text-mid); white-space: nowrap; font-weight: 500; }
+.canvas-extra-item select { flex: 1; }
+.canvas-extra-item input[type=text] { width: 84px; }
+.canvas-info-badge {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+  background: rgba(190,240,44,0.05); border: 1px solid rgba(190,240,44,0.12);
+  color: var(--accent); font-size: 10px; font-family: 'Creato Display', sans-serif;
+  font-weight: 600;
+  padding: 4px 12px; border-radius: 6px; letter-spacing: 1px;
+}
+
+/* ── XML OUTPUT ── */
+.xml-output {
+  background: #000; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 16px;
+  font-family: 'Creato Display', monospace; font-size: 11px;
+  color: #a1a1aa; line-height: 1.8;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 420px; overflow: auto;
+  min-height: 180px;
+  box-shadow: inset 0 2px 20px rgba(0,0,0,0.5);
+}
+.xml-output .kw { color: var(--accent); }
+.xml-output .attr { color: #86efac; }
+.xml-output .val { color: var(--yellow); }
+.xml-output .cmt { color: rgba(255,255,255,0.2); }
+
+/* ── BUTTONS ── */
+.btn-dl {
+  background: rgba(190,240,44,0.1); border: 1px solid rgba(190,240,44,0.3);
+  color: var(--accent);
+  padding: 12px 20px; border-radius: 10px; cursor: pointer;
+  font-family: 'Creato Display', sans-serif; font-size: 13px; font-weight: 700;
+  transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  width: 100%; justify-content: center; margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+.btn-dl:hover {
+  background: rgba(190,240,44,0.2); border-color: var(--accent);
+  box-shadow: 0 0 24px rgba(190,240,44,0.2); transform: translateY(-1px);
+}
+.btn-dl:disabled { opacity: 0.25; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-copy {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-mid); font-size: 11px; font-family: 'Creato Display', sans-serif;
+  font-weight: 600;
+  padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+.btn-copy:hover { color: var(--accent); border-color: rgba(190,240,44,0.3); background: rgba(190,240,44,0.06); }
+.btn-copy:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── PROJECT NAME ── */
+.project-name-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px; margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.project-name-row:hover { border-color: rgba(190,240,44,0.15); }
+.project-name-row label { font-size: 12px; color: var(--text-mid); white-space: nowrap; font-weight: 500; }
+.project-name-row input[type=text] {
+  flex: 1; font-size: 13px; padding: 6px 10px;
+}
+.project-name-row input::placeholder { color: var(--text-dim); font-size: 12px; font-weight: 300; }
+
+/* ── LOG ── */
+.log-section { margin-top: 22px; }
+.log-title {
+  font-size: 10px; font-family: 'Creato Display', sans-serif; font-weight: 700;
+  letter-spacing: 3px; color: var(--text-dim); margin-bottom: 10px; text-transform: uppercase;
+}
+.log-box {
+  background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px; padding: 12px;
+  font-family: 'Creato Display', sans-serif; font-size: 11px;
+  max-height: 200px; overflow: auto;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.log-entry { display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+.log-entry .tag {
+  font-size: 9px; font-weight: 800; padding: 2px 7px;
+  border-radius: 4px; flex-shrink: 0; margin-top: 1px;
+  letter-spacing: 0.5px;
+}
+.log-ok .tag { background: rgba(190,240,44,0.12); color: var(--green); }
+.log-skip .tag { background: rgba(250,204,21,0.1); color: var(--yellow); }
+.log-err .tag { background: rgba(249,115,22,0.12); color: var(--orange); }
+.log-info .tag { background: rgba(255,255,255,0.1); color: var(--text-mid); }
+.log-entry span { color: var(--text-mid); }
+
+/* ── STATS ── */
+.stats-row { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+.stat-box {
+  flex: 1; min-width: 100px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; padding: 14px 16px; text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.stat-box:hover {
+  border-color: rgba(190,240,44,0.2);
+  box-shadow: 0 0 20px rgba(190,240,44,0.06);
+}
+.stat-num {
+  font-family: 'Creato Display', sans-serif; font-size: 28px; font-weight: 900;
+  background: var(--accent);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  font-size: 9px; color: var(--text-dim); letter-spacing: 2px; margin-top: 4px;
+  text-transform: uppercase; font-weight: 700;
+}
+
+/* ── MISC ── */
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(0,0,0,0.2); border-top-color: #000;
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.tag-pill {
+  font-size: 10px; padding: 3px 10px; border-radius: 6px;
+  font-family: 'Creato Display', sans-serif; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.tag-svg {
+  background: rgba(190,240,44,0.1); color: var(--accent);
+  border: 1px solid rgba(190,240,44,0.3);
+}
+.tag-am {
+  background: rgba(255,255,255,0.1); color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.info-pill {
+  font-size: 10px; padding: 2px 10px; border-radius: 5px;
+  background: rgba(190,240,44,0.07); border: 1px solid rgba(190,240,44,0.15);
+  color: var(--accent); font-family: 'Creato Display', sans-serif;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.slider-val {
+  font-size: 11px; font-family: 'Creato Display', sans-serif; font-weight: 700;
+  color: var(--accent); min-width: 40px; text-align: right;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(190,240,44,0.3); }
+
+/* ── FADE IN ANIMATION ── */
+.panel { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+.panel:nth-child(1) { animation-delay: 0.1s; }
+.panel:nth-child(2) { animation-delay: 0.2s; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Override Nyxiel Modern UI (Clear Previous Conflicting Styles) */
+#nyxiel-modern-ui { display: none !important; }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="app">
+  <header>
+    <div class="logo">
+      
+      <div>
+        <div class="logo-text">SVG → XML</div>
+        
+      </div>
+    </div>
+    <span class="badge">XML ALIGHT MOTION</span>
+  </header>
+
+  <div class="main">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-head-icon" style="background: #c9b726;color: #c9b726;"></div>
+        <span class="panel-head-title">Input SVG</span>
+        <span class="tag-pill tag-svg" style="margin-left:auto">SVG</span>
+      </div>
+      <div class="panel-body">
+        <div class="section-label">Upload File</div>
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".svg,image/svg+xml">
+          
+          <div class="dz-title">Drop SVG file di sini</div>
+          <div class="dz-sub">atau klik untuk memilih file</div>
+          <div class="dz-types">SUPPORTS: Illustrator · Inkscape · Figma · Sketch · Potrace · Font Icons · Web SVG · SVGO · Bootstrap Icons · Heroicons · Feather · Material Icons · Tabler · Lucide · Flat Icons · FontAwesome · Google Material · dll</div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px">Override Warna (Opsional)</div>
+        <div class="color-row">
+          <label>Warna Fill</label>
+          <input type="color" id="colorPicker" value="#000000">
+          <input type="text" id="colorHex" value="" placeholder="auto (dari SVG)" style="width:130px">
+          <button class="btn-copy" onclick="clearColorOverride()" title="Reset ke warna dari SVG">✕ Reset</button>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">Stroke Override (Opsional)</div>
+        <div class="stroke-row">
+          <label>Direction</label>
+          <select id="strokeDirection">
+            <option value="centered">centered</option>
+            <option value="inside">inside</option>
+            <option value="outside">outside</option>
+          </select>
+        </div>
+        <div class="stroke-row">
+          <label>End-Size</label>
+          <input type="number" id="strokeEndSize" value="1.5" min="0.1" max="20" step="0.5" style="width:90px">
+          <span style="font-size:11px;color:var(--text-dim)">px stroke</span>
+        </div>
+        <div class="stroke-row">
+          <label>Gradient Stroke</label>
+          <input type="color" id="strokeColorPicker" value="#ffffff">
+          <input type="text" id="strokeColorHex" value="#ffffff" placeholder="#rrggbb" style="width:90px">
+          <span id="strokeActiveTag" class="info-pill" style="display:none">AKTIF</span>
+        </div>
+
+        <div class="section-label" style="margin-top:14px">Gradient Fill Override (Opsional)</div>
+        <div class="toggle-row">
+          <label>Tipe Gradient</label>
+          <div class="toggle-chip">
+            <span class="chip chip-grad active" id="chipGradOff" onclick="setGradType('off')">OFF (dari SVG)</span>
+            <span class="chip chip-grad" id="chipGradLinear" onclick="setGradType('linear')">Linear</span>
+            <span class="chip chip-grad" id="chipGradRadial" onclick="setGradType('radial')">Radial</span>
+            <span class="chip chip-grad" id="chipGradSweep" onclick="setGradType('sweep')">Sweep</span>
+          </div>
+        </div>
+        <div id="gradOverridePanel" style="display:none">
+          <div class="color-row">
+            <label>🔴 Start Color</label>
+            <input type="color" id="gradStartPicker" value="#ff4444">
+            <input type="text" id="gradStartHex" value="#ff4444" placeholder="#rrggbb" style="width:90px">
+          </div>
+          <div class="color-row">
+            <label>⚪ End Color</label>
+            <input type="color" id="gradEndPicker" value="#ffffff">
+            <input type="text" id="gradEndHex" value="#ffffff" placeholder="#rrggbb" style="width:90px">
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:14px">Clipping Mask</div>
+        <div class="checkbox-row">
+          <label>Tandai semua shape sebagai clippingMask</label>
+          <input type="checkbox" id="chkClipping">
+        </div>
+
+        <div class="section-label" style="margin-top:4px">Blending Mode (SVG mix-blend-mode → AM)</div>
+        <div class="select-row">
+          <label>Override Blending</label>
+          <select id="blendingOverride">
+            <option value="off">OFF (dari SVG)</option>
+            <option value="normal">normal</option>
+            <option value="multiply">multiply</option>
+            <option value="screen">screen</option>
+            <option value="overlay">overlay</option>
+            <option value="darken">darken</option>
+            <option value="lighten">lighten</option>
+            <option value="color-dodge">color-dodge</option>
+            <option value="color-burn">color-burn</option>
+            <option value="hard-light">hard-light</option>
+            <option value="soft-light">soft-light</option>
+            <option value="diff">diff</option>
+            <option value="exclusion">exclusion</option>
+            <option value="hue">hue</option>
+            <option value="saturation">saturation</option>
+            <option value="color">color</option>
+            <option value="luminance">luminance</option>
+            <option value="linear-burn">linear-burn</option>
+            <option value="linear-dodge">linear-dodge</option>
+            <option value="darker-color">darker-color</option>
+            <option value="lighter-color">lighter-color</option>
+            <option value="soft-overlay">soft-overlay</option>
+            <option value="vivid-light">vivid-light</option>
+            <option value="linear-light">linear-light</option>
+            <option value="pin-light">pin-light</option>
+            <option value="subtract">subtract</option>
+            <option value="divide">divide</option>
+            <option value="mask">mask</option>
+            <option value="exclude">exclude</option>
+          </select>
+        </div>
+
+        <div class="section-label" style="margin-top:4px">Shadow Override (Opsional)</div>
+        <div class="checkbox-row">
+          <label>Aktifkan Shadow di semua shape</label>
+          <input type="checkbox" id="chkShadow">
+        </div>
+        <div id="shadowPanel" style="">
+          <div class="select-row">
+            <label>Direction</label>
+            <select id="shadowDirection">
+              <option value="outside">outside</option>
+              <option value="inside">inside</option>
+            </select>
+          </div>
+          <div class="select-row">
+            <label>Warna Shadow</label>
+            <input type="color" id="shadowColorPicker" value="#000000">
+            <input type="text" id="shadowColorHex" value="#000000" placeholder="#rrggbb">
+          </div>
+          <div class="slider-row">
+            <div class="slider-head">
+              <label>Size</label>
+              <span class="slider-val" id="shadowSizeVal">40</span>
+            </div>
+            <input type="range" class="opacity-slider" id="shadowSize" min="0" max="200" value="20" step="1">
+          </div>
+          <div class="select-row">
+            <label>Offset X, Y</label>
+            <input type="number" id="shadowOffsetX" value="0" min="-500" max="500" step="1" style="width:72px">
+            <input type="number" id="shadowOffsetY" value="0" min="-500" max="500" step="1" style="width:72px">
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:4px">Opacity Override</div>
+        <div class="slider-row">
+          <div class="slider-head">
+            <label>Opacity semua shape (1 = dari SVG)</label>
+            <span class="slider-val" id="opacityVal">100</span>
+          </div>
+          <input type="range" class="opacity-slider" id="opacityOverride" min="0" max="1" value="1" step="0.01">
+        </div>
+
+        <div class="section-label" style="margin-top:20px">Preview</div>
+        <div id="svgPreview">
+          <div class="empty-label">
+            
+            <div>Preview SVG akan muncul di sini</div>
+          </div>
+        </div>
+
+        <div class="convert-wrap">
+          <button class="btn-convert" id="btnConvert" disabled="">
+          Convert to  XML
+          </button>
+        </div>
+
+        <div class="stats-row" id="statsRow" style="display:none">
+          <div class="stat-box">
+            <div class="stat-num" id="statShapes">0</div>
+            <div class="stat-label">Shapes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="statSkipped">0</div>
+            <div class="stat-label">Dilewati</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="statSize">0B</div>
+            <div class="stat-label">Ukuran</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-head-icon" style="background:var(--accent);color:var(--accent)"></div>
+        <span class="panel-head-title">Output XML</span>
+        <span class="tag-pill tag-am" style="margin-left:auto">XML</span>
+        <button class="btn-copy" id="btnCopy" onclick="copyXml()" style="margin-left:8px" disabled="">Copy</button>
+      </div>
+      <div class="panel-body">
+        <div class="section-label">Canvas &amp; Project Settings</div>
+        <div class="canvas-settings">
+          <div style="font-size:10px;color:var(--text-dim);font-family:'Creato Display',sans-serif;font-weight:700;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;">Preset Rasio</div>
+          <div class="canvas-preset-row">
+            <button class="canvas-preset-btn" onclick="setCanvasPreset(1920,1080,'16:9')">16:9</button>
+            <button class="canvas-preset-btn active" onclick="setCanvasPreset(1080,1920,'9:16')">9:16</button>
+            <button class="canvas-preset-btn" onclick="setCanvasPreset(1080,1350,'4:5')">4:5</button>
+            <button class="canvas-preset-btn" onclick="setCanvasPreset(1080,1080,'1:1')">1:1</button>
+            <button class="canvas-preset-btn" onclick="setCanvasPreset(1440,1080,'4:3')">4:3</button>
+            <button class="canvas-preset-btn" onclick="setCanvasPreset(2160,2160,'2K')">2K 1:1</button>
+            <button class="canvas-preset-btn" onclick="setCanvasPreset(3840,2160,'4K')">4K 16:9</button>
+          </div>
+          <div style="font-size:10px;color:var(--text-dim);font-family:'Creato Display',sans-serif;font-weight:700;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;">Ukuran Canvas (px)</div>
+          <div class="canvas-dims-row">
+            <label>Lebar</label>
+            <input type="number" id="canvasW" value="1080" min="100" max="7680" step="1" oninput="onCanvasDimChange()">
+            <span class="dim-sep">×</span>
+            <label style="min-width:auto">Tinggi</label>
+            <input type="number" id="canvasH" value="1080" min="100" max="7680" step="1" oninput="onCanvasDimChange()">
+          </div>
+          <div class="canvas-extra-row">
+            <div class="canvas-extra-item">
+              <label>FPS</label>
+              <select id="canvasFps">
+                <option value="24">24 fps</option>
+                <option value="25">25 fps</option>
+                <option value="30" selected="">30 fps</option>
+                <option value="60">60 fps</option>
+              </select>
+            </div>
+            <div class="canvas-extra-item">
+              <label>Background</label>
+              <input type="color" id="canvasBgPicker" value="#000000" oninput="syncBgColor(this.value)">
+              <input type="text" id="canvasBgHex" value="#000000" placeholder="#000000" maxlength="9" oninput="syncBgHex(this.value)">
+            </div>
+          </div>
+          <div class="canvas-info-badge" id="canvasInfoBadge">1080 × 1920 px · 30fps · bg #000000</div>
+        </div>
+
+        <div class="section-label">Nama Project</div>
+        <div class="project-name-row">
+          <label>Nama</label>
+          <input type="text" id="projectName" placeholder="Nama project di Alight Motion...">
+        </div>
+
+        <div class="section-label">XML Output</div>
+        <div class="xml-output" id="xmlOutput"><span style="color:var(--text-dim)">//Output akan muncul setelah konversi...</span></div>
+
+        <button class="btn-dl" id="btnDownload" disabled="" onclick="downloadFile()">
+          Download XML
+        </button>
+
+        <div class="log-section">
+          <div class="log-title">Conversion Log</div>
+          <div class="log-box" id="logBox">
+            <div class="log-entry log-info">
+              <span class="tag">INFO</span>
+              <span>Siap untuk konversi. Upload file SVG untuk memulai.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// MATRIX MATH
+// =====================================================
+class Mat2D {
+  constructor(a=1,b=0,c=0,d=1,e=0,f=0){
+    this.a=a;this.b=b;this.c=c;this.d=d;this.e=e;this.f=f;
+  }
+  mul(m){
+    return new Mat2D(
+      this.a*m.a + this.c*m.b,
+      this.b*m.a + this.d*m.b,
+      this.a*m.c + this.c*m.d,
+      this.b*m.c + this.d*m.d,
+      this.a*m.e + this.c*m.f + this.e,
+      this.b*m.e + this.d*m.f + this.f
+    );
+  }
+  pt(x,y){return {x:this.a*x+this.c*y+this.e, y:this.b*x+this.d*y+this.f};}
+}
+
+function parseTx(str){
+  if(!str) return new Mat2D();
+  const s=str.trim();
+  // Handle multiple chained transforms
+  const parts=s.match(/(matrix|translate|scale|rotate|skewX|skewY)\([^)]+\)/g);
+  if(parts&&parts.length>1){
+    let mat=new Mat2D();
+    for(const p of parts) mat=mat.mul(parseSingleTx(p));
+    return mat;
+  }
+  return parseSingleTx(s);
+}
+
+function parseSingleTx(s){
+  let m;
+  if((m=s.match(/matrix\(([^)]+)\)/))){
+    const v=m[1].split(/[\s,]+/).map(Number);
+    return new Mat2D(v[0],v[1],v[2],v[3],v[4],v[5]);
+  }
+  if((m=s.match(/translate\(([^)]+)\)/))){
+    const v=m[1].split(/[\s,]+/).map(Number);
+    return new Mat2D(1,0,0,1,v[0],v[1]||0);
+  }
+  if((m=s.match(/scale\(([^)]+)\)/))){
+    const v=m[1].split(/[\s,]+/).map(Number);
+    return new Mat2D(v[0],0,0,v[1]!==undefined?v[1]:v[0],0,0);
+  }
+  if((m=s.match(/rotate\(([^)]+)\)/))){
+    const v=m[1].split(/[\s,]+/).map(Number);
+    const a=v[0]*Math.PI/180;
+    const co=Math.cos(a),si=Math.sin(a);
+    const cx=v[1]||0,cy=v[2]||0;
+    const t1=new Mat2D(1,0,0,1,cx,cy);
+    const r=new Mat2D(co,si,-si,co,0,0);
+    const t2=new Mat2D(1,0,0,1,-cx,-cy);
+    return t1.mul(r).mul(t2);
+  }
+  if((m=s.match(/skewX\(([^)]+)\)/))){
+    const a=parseFloat(m[1])*Math.PI/180;
+    return new Mat2D(1,0,Math.tan(a),1,0,0);
+  }
+  if((m=s.match(/skewY\(([^)]+)\)/))){
+    const a=parseFloat(m[1])*Math.PI/180;
+    return new Mat2D(1,Math.tan(a),0,1,0,0);
+  }
+  return new Mat2D();
+}
+
+// =====================================================
+// EXTENDED CSS NAMED COLORS (all 147 standard + extras)
+// =====================================================
+const NAMED_COLORS={
+  aliceblue:'#f0f8ff',antiquewhite:'#faebd7',aqua:'#00ffff',aquamarine:'#7fffd4',
+  azure:'#f0ffff',beige:'#f5f5dc',bisque:'#ffe4c4',black:'#000000',
+  blanchedalmond:'#ffebcd',blue:'#0000ff',blueviolet:'#8a2be2',brown:'#a52a2a',
+  burlywood:'#deb887',cadetblue:'#5f9ea0',chartreuse:'#7fff00',chocolate:'#d2691e',
+  coral:'#ff7f50',cornflowerblue:'#6495ed',cornsilk:'#fff8dc',crimson:'#dc143c',
+  cyan:'#00ffff',darkblue:'#00008b',darkcyan:'#008b8b',darkgoldenrod:'#b8860b',
+  darkgray:'#a9a9a9',darkgrey:'#a9a9a9',darkgreen:'#006400',darkkhaki:'#bdb76b',
+  darkmagenta:'#8b008b',darkolivegreen:'#556b2f',darkorange:'#ff8c00',
+  darkorchid:'#9932cc',darkred:'#8b0000',darksalmon:'#e9967a',darkseagreen:'#8fbc8f',
+  darkslateblue:'#483d8b',darkslategray:'#2f4f4f',darkslategrey:'#2f4f4f',
+  darkturquoise:'#00ced1',darkviolet:'#9400d3',deeppink:'#ff1493',
+  deepskyblue:'#00bfff',dimgray:'#696969',dimgrey:'#696969',dodgerblue:'#1e90ff',
+  firebrick:'#b22222',floralwhite:'#fffaf0',forestgreen:'#228b22',fuchsia:'#ff00ff',
+  gainsboro:'#dcdcdc',ghostwhite:'#f8f8ff',gold:'#ffd700',goldenrod:'#daa520',
+  gray:'#808080',grey:'#808080',green:'#008000',greenyellow:'#adff2f',
+  honeydew:'#f0fff0',hotpink:'#ff69b4',indianred:'#cd5c5c',indigo:'#4b0082',
+  ivory:'#fffff0',khaki:'#f0e68c',lavender:'#e6e6fa',lavenderblush:'#fff0f5',
+  lawngreen:'#7cfc00',lemonchiffon:'#fffacd',lightblue:'#add8e6',lightcoral:'#f08080',
+  lightcyan:'#e0ffff',lightgoldenrodyellow:'#fafad2',lightgray:'#d3d3d3',
+  lightgrey:'#d3d3d3',lightgreen:'#90ee90',lightpink:'#ffb6c1',lightsalmon:'#ffa07a',
+  lightseagreen:'#20b2aa',lightskyblue:'#87cefa',lightslategray:'#778899',
+  lightslategrey:'#778899',lightsteelblue:'#b0c4de',lightyellow:'#ffffe0',
+  lime:'#00ff00',limegreen:'#32cd32',linen:'#faf0e6',magenta:'#ff00ff',
+  maroon:'#800000',mediumaquamarine:'#66cdaa',mediumblue:'#0000cd',
+  mediumorchid:'#ba55d3',mediumpurple:'#9370db',mediumseagreen:'#3cb371',
+  mediumslateblue:'#7b68ee',mediumspringgreen:'#00fa9a',mediumturquoise:'#48d1cc',
+  mediumvioletred:'#c71585',midnightblue:'#191970',mintcream:'#f5fffa',
+  mistyrose:'#ffe4e1',moccasin:'#ffe4b5',navajowhite:'#ffdead',navy:'#000080',
+  oldlace:'#fdf5e6',olive:'#808000',olivedrab:'#6b8e23',orange:'#ffa500',
+  orangered:'#ff4500',orchid:'#da70d6',palegoldenrod:'#eee8aa',palegreen:'#98fb98',
+  paleturquoise:'#afeeee',palevioletred:'#db7093',papayawhip:'#ffefd5',
+  peachpuff:'#ffdab9',peru:'#cd853f',pink:'#ffc0cb',plum:'#dda0dd',
+  powderblue:'#b0e0e6',purple:'#800080',rebeccapurple:'#663399',red:'#ff0000',
+  rosybrown:'#bc8f8f',royalblue:'#4169e1',saddlebrown:'#8b4513',salmon:'#fa8072',
+  sandybrown:'#f4a460',seagreen:'#2e8b57',seashell:'#fff5ee',sienna:'#a0522d',
+  silver:'#c0c0c0',skyblue:'#87ceeb',slateblue:'#6a5acd',slategray:'#708090',
+  slategrey:'#708090',snow:'#fffafa',springgreen:'#00ff7f',steelblue:'#4682b4',
+  tan:'#d2b48c',teal:'#008080',thistle:'#d8bfd8',tomato:'#ff6347',
+  turquoise:'#40e0d0',violet:'#ee82ee',wheat:'#f5deb3',white:'#ffffff',
+  whitesmoke:'#f5f5f5',yellow:'#ffff00',yellowgreen:'#9acd32',
+  none:null,transparent:'#00000000'
+};
+
+// =====================================================
+// COLOR UTILITIES — Universal CSS Color Support
+// =====================================================
+function hslToRgb(h,s,l){
+  h=((h%360)+360)%360; s/=100; l/=100;
+  const c=(1-Math.abs(2*l-1))*s;
+  const x=c*(1-Math.abs((h/60)%2-1));
+  const m=l-c/2;
+  let r=0,g=0,b=0;
+  if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}
+  else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}
+  else if(h<300){r=x;b=c;}else{r=c;b=x;}
+  return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+}
+
+function hwbToRgb(h,w,b){
+  w/=100; b/=100;
+  if(w+b>=1){const g=Math.round(w/(w+b)*255);return[g,g,g];}
+  const [r0,g0,b0]=hslToRgb(h,100,50);
+  return [
+    Math.round(r0/255*(1-w-b)*255+w*255),
+    Math.round(g0/255*(1-w-b)*255+w*255),
+    Math.round(b0/255*(1-w-b)*255+w*255)
+  ];
+}
+
+// oklch/oklab → sRGB (approximate)
+function oklchToRgb(l,c,h){
+  const hRad=h*Math.PI/180;
+  const a=c*Math.cos(hRad), b2=c*Math.sin(hRad);
+  // oklab to linear sRGB
+  const l0=l+0.3963377774*a+0.2158037573*b2;
+  const m0=l-0.1055613458*a-0.0638541728*b2;
+  const s0=l-0.0894841775*a-1.2914855480*b2;
+  const ll=l0**3, mm=m0**3, ss=s0**3;
+  let r=4.0767416621*ll-3.3077115913*mm+0.2309699292*ss;
+  let g=-1.2684380046*ll+2.6097574011*mm-0.3413193965*ss;
+  let bv=-0.0041960863*ll-0.7034186147*mm+1.7076147010*ss;
+  // linear to sRGB gamma
+  const toSrgb=x=>x<=0.0031308?12.92*x:1.055*x**(1/2.4)-0.055;
+  r=Math.round(Math.max(0,Math.min(1,toSrgb(r)))*255);
+  g=Math.round(Math.max(0,Math.min(1,toSrgb(g)))*255);
+  b2=Math.round(Math.max(0,Math.min(1,toSrgb(bv)))*255);
+  return [r,g,b2];
+}
+
+function parseColor(colorStr, opacity=1){
+  if(!colorStr) return null;
+  colorStr=colorStr.trim();
+  const lower=colorStr.toLowerCase();
+  if(lower==='none') return null;
+  if(lower==='transparent') return '#00000000';
+  if(lower==='currentcolor') return null; // resolved separately
+
+  let r,g,b,a=Math.round(Math.max(0,Math.min(1,opacity))*255);
+
+  // Named colors
+  if(lower in NAMED_COLORS){
+    const nc=NAMED_COLORS[lower];
+    if(!nc) return null;
+    if(nc==='#00000000') return '#00000000';
+    colorStr=nc;
+  }
+
+  let mm;
+  // #RGB #RGBA #RRGGBB #RRGGBBAA
+  if(/^#/.test(colorStr)){
+    const h=colorStr.slice(1);
+    if(h.length===3){r=parseInt(h[0]+h[0],16);g=parseInt(h[1]+h[1],16);b=parseInt(h[2]+h[2],16);}
+    else if(h.length===4){r=parseInt(h[0]+h[0],16);g=parseInt(h[1]+h[1],16);b=parseInt(h[2]+h[2],16);a=Math.round(parseInt(h[3]+h[3],16)/255*a/255*255);}
+    else if(h.length===6){r=parseInt(h.slice(0,2),16);g=parseInt(h.slice(2,4),16);b=parseInt(h.slice(4,6),16);}
+    else if(h.length===8){r=parseInt(h.slice(0,2),16);g=parseInt(h.slice(2,4),16);b=parseInt(h.slice(4,6),16);
+      const fileA=parseInt(h.slice(6,8),16)/255;
+      a=Math.round(fileA*(a/255)*255);
+    }
+    else return null;
+  }
+  // rgb() rgba()
+  else if((mm=colorStr.match(/rgba?\(\s*([\d.]+%?)\s*[,\s]\s*([\d.]+%?)\s*[,\s]\s*([\d.]+%?)(?:\s*[,\/]\s*([\d.]+%?))?\s*\)/i))){
+    const pct=v=>v.endsWith('%')?parseFloat(v)/100*255:parseFloat(v);
+    r=Math.round(pct(mm[1]));g=Math.round(pct(mm[2]));b=Math.round(pct(mm[3]));
+    if(mm[4]!==undefined){
+      const av=mm[4].endsWith('%')?parseFloat(mm[4])/100:parseFloat(mm[4]);
+      a=Math.round(Math.max(0,Math.min(1,av))*(a/255)*255);
+    }
+  }
+  // hsl() hsla()
+  else if((mm=colorStr.match(/hsla?\(\s*([\d.]+(?:deg|rad|turn|grad)?)\s*[,\s]\s*([\d.]+)%\s*[,\s]\s*([\d.]+)%(?:\s*[,\/]\s*([\d.]+%?))?\s*\)/i))){
+    let hv=parseFloat(mm[1]);
+    const unit=(mm[1].match(/[a-z]+/)||[''])[0].toLowerCase();
+    if(unit==='rad') hv=hv*180/Math.PI;
+    else if(unit==='turn') hv=hv*360;
+    else if(unit==='grad') hv=hv*0.9;
+    [r,g,b]=hslToRgb(hv,parseFloat(mm[2]),parseFloat(mm[3]));
+    if(mm[4]!==undefined){const av=mm[4].endsWith('%')?parseFloat(mm[4])/100:parseFloat(mm[4]);a=Math.round(Math.max(0,Math.min(1,av))*(a/255)*255);}
+  }
+  // hwb()
+  else if((mm=colorStr.match(/hwb\(\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%(?:\s*\/\s*([\d.]+%?))?\s*\)/i))){
+    [r,g,b]=hwbToRgb(parseFloat(mm[1]),parseFloat(mm[2]),parseFloat(mm[3]));
+    if(mm[4]){const av=mm[4].endsWith('%')?parseFloat(mm[4])/100:parseFloat(mm[4]);a=Math.round(Math.max(0,Math.min(1,av))*(a/255)*255);}
+  }
+  // oklch()
+  else if((mm=colorStr.match(/oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)/i))){
+    let lv=parseFloat(mm[1]); if(mm[1].endsWith('%')) lv/=100;
+    [r,g,b]=oklchToRgb(lv,parseFloat(mm[2]),parseFloat(mm[3]));
+    if(mm[4]){const av=mm[4].endsWith('%')?parseFloat(mm[4])/100:parseFloat(mm[4]);a=Math.round(Math.max(0,Math.min(1,av))*(a/255)*255);}
+  }
+  // lab() / oklab() — rough approximation via oklch with c=0
+  else if((mm=colorStr.match(/(?:ok)?lab\(\s*([\d.]+%?)\s+([-\d.]+)\s+([-\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)/i))){
+    let lv=parseFloat(mm[1]); if(mm[1].endsWith('%')) lv/=100;
+    const av2=parseFloat(mm[2])/100, bv2=parseFloat(mm[3])/100;
+    const c=Math.sqrt(av2*av2+bv2*bv2)*100;
+    const hh=Math.atan2(bv2,av2)*180/Math.PI;
+    [r,g,b]=oklchToRgb(lv,c/100,hh);
+    if(mm[4]){const av=mm[4].endsWith('%')?parseFloat(mm[4])/100:parseFloat(mm[4]);a=Math.round(Math.max(0,Math.min(1,av))*(a/255)*255);}
+  }
+  // lch() — treat same as oklch approx
+  else if((mm=colorStr.match(/lch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)/i))){
+    let lv=parseFloat(mm[1]); if(mm[1].endsWith('%')) lv/=100; lv=lv/100;
+    [r,g,b]=oklchToRgb(Math.min(1,lv),parseFloat(mm[2])/130,parseFloat(mm[3]));
+    if(mm[4]){const av=mm[4].endsWith('%')?parseFloat(mm[4])/100:parseFloat(mm[4]);a=Math.round(Math.max(0,Math.min(1,av))*(a/255)*255);}
+  }
+  else return null;
+
+  if(isNaN(r)||isNaN(g)||isNaN(b)) return null;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  const hex=n=>n.toString(16).padStart(2,'0');
+  return `#${hex(a)}${hex(r)}${hex(g)}${hex(b)}`;
+}
+
+// =====================================================
+// CSS STYLESHEET PARSER — For SVGs with <style> tags
+// =====================================================
+let cssRules = {}; // Map: selector → {prop: value}
+
+function parseSvgStylesheet(svgDoc){
+  cssRules = {};
+  const styleEls = svgDoc.querySelectorAll('style');
+  for(const s of styleEls){
+    const css = s.textContent || '';
+    // Match selector { declarations }
+    const ruleRe = /([^{]+)\{([^}]*)\}/g;
+    let m;
+    while((m=ruleRe.exec(css))!==null){
+      const selectors = m[1].split(',').map(s=>s.trim());
+      const decls = m[2];
+      const props = {};
+      const declRe = /([\w-]+)\s*:\s*([^;]+)/g;
+      let dm;
+      while((dm=declRe.exec(decls))!==null){
+        props[dm[1].trim().toLowerCase()] = dm[2].trim();
+      }
+      for(const sel of selectors){
+        if(!cssRules[sel]) cssRules[sel] = {};
+        Object.assign(cssRules[sel], props);
+      }
+    }
+  }
+}
+
+// Get computed CSS property for an element (class + id + inline + attribute)
+function getComputedProp(el, prop){
+  // 1. Inline style (highest priority)
+  const st = el.getAttribute('style') || '';
+  const inlineM = st.match(new RegExp(`(?:^|;)\\s*${prop}\\s*:\\s*([^;!]+)(?:!important)?`, 'i'));
+  if(inlineM) return inlineM[1].trim();
+
+  // 2. !important from any class/id
+  // 3. Matching CSS rules (class, id, tag)
+  const classes = (el.getAttribute('class') || '').split(/\s+/).filter(Boolean);
+  const id = el.getAttribute('id');
+  const tag = (el.tagName || '').toLowerCase().replace(/.*:/,'');
+
+  // Try in specificity order: id > class > tag
+  const candidates = [];
+  if(id && cssRules['#'+id] && cssRules['#'+id][prop] !== undefined) candidates.push(cssRules['#'+id][prop]);
+  for(const cls of classes){
+    if(cssRules['.'+cls] && cssRules['.'+cls][prop] !== undefined) candidates.push(cssRules['.'+cls][prop]);
+    // class + tag combination
+    if(cssRules[tag+'.'+cls] && cssRules[tag+'.'+cls][prop] !== undefined) candidates.push(cssRules[tag+'.'+cls][prop]);
+  }
+  // Tag selector
+  if(cssRules[tag] && cssRules[tag][prop] !== undefined) candidates.push(cssRules[tag][prop]);
+
+  if(candidates.length) return candidates[0];
+
+  // 4. Presentation attribute
+  const attr = el.getAttribute(prop);
+  if(attr) return attr;
+
+  return null;
+}
+
+// Walk up tree for inherited properties
+function getInheritedProp(el, prop, currentColor){
+  let cur = el;
+  while(cur && cur.tagName && cur.tagName.toLowerCase() !== 'html'){
+    const val = getComputedProp(cur, prop);
+    if(val && val !== 'inherit'){
+      if(val.toLowerCase() === 'currentcolor' && prop !== 'color'){
+        // resolve currentColor from the 'color' property
+        return getInheritedProp(cur, 'color', currentColor) || currentColor || '#000000';
+      }
+      return val;
+    }
+    cur = cur.parentElement;
+  }
+  return null;
+}
+
+// Check visibility
+function isVisible(el){
+  let cur = el;
+  while(cur && cur.tagName){
+    const tag = (cur.tagName || '').toLowerCase();
+    if(tag === 'svg') break;
+    const st = cur.getAttribute('style') || '';
+    const disp = st.match(/display\s*:\s*([^;]+)/i);
+    const vis = st.match(/visibility\s*:\s*([^;]+)/i);
+    const dispAttr = getComputedProp(cur, 'display');
+    const visAttr = getComputedProp(cur, 'visibility');
+    if((disp && disp[1].trim()==='none') || (dispAttr==='none')) return false;
+    if((vis && vis[1].trim()==='hidden') || (visAttr==='hidden')) return false;
+    cur = cur.parentElement;
+  }
+  return true;
+}
+
+function getFill(el, colorOverride){
+  if(colorOverride) return colorOverride;
+  if(!isVisible(el)) return null;
+  const fill = getInheritedProp(el, 'fill', null) || 'black'; // SVG default fill is black
+  if(!fill || fill === 'none') return null;
+  // gradient/pattern references → flatten to a representative solid color
+  if(fill.startsWith('url(')){
+    const resolved = resolveUrlRef(el, fill);
+    if(resolved) return resolved;
+    // If URL ref fails, try to find any ancestor gradient and use its midstop
+    // or fall back to a neutral color so shape is not lost
+    const doc = el.ownerDocument;
+    const grads = doc.querySelectorAll('linearGradient stop, radialGradient stop');
+    if(grads.length > 0){
+      const midStop = grads[Math.floor(grads.length/2)];
+      const sc = midStop.getAttribute('stop-color') || '#000000';
+      return parseColor(sc, 1);
+    }
+    return '#ff000000'; // transparent fallback
+  }
+  const fo = parseFloat(getInheritedProp(el,'fill-opacity',null) || '1');
+  const op = parseFloat(getInheritedProp(el,'opacity',null) || '1');
+  return parseColor(fill, fo*op);
+}
+
+function getStroke(el){
+  if(!isVisible(el)) return null;
+  const stroke = getInheritedProp(el, 'stroke', null);
+  if(!stroke || stroke === 'none') return null;
+  const so = parseFloat(getInheritedProp(el,'stroke-opacity',null) || '1');
+  const op = parseFloat(getInheritedProp(el,'opacity',null) || '1');
+  const sw = parseFloat(getInheritedProp(el,'stroke-width',null) || '1');
+  let color;
+  if(stroke.startsWith('url(')){
+    // Try to resolve gradient stroke to solid midpoint color
+    color = resolveUrlRef(el, stroke);
+    if(!color) return null;
+  } else {
+    color = parseColor(stroke, so*op);
+  }
+  if(!color) return null;
+  return {color, width: sw};
+}
+
+// Resolve url(#id) gradient/pattern references → best-effort solid color
+function resolveUrlRef(el, refStr){
+  const m = refStr.match(/url\(["']?#([^"')]+)["']?\)/);
+  if(!m) return null;
+  const refId = m[1];
+  const doc = el.ownerDocument;
+  // Try getElementById first, then querySelector with escaped ID for special chars
+  let refEl = doc.getElementById(refId);
+  if(!refEl){
+    try {
+      // Escape special characters in CSS selector
+      const escapedId = refId.replace(/([!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '\\$1');
+      refEl = doc.querySelector('#' + escapedId);
+    } catch(e){ refEl = null; }
+  }
+  if(!refEl){
+    // Fallback: check symbolRegistry (fastest for special-char IDs)
+    refEl = symbolRegistry[refId] || null;
+  }
+  if(!refEl){
+    // Last resort: search all elements by id attribute manually
+    const all = doc.querySelectorAll('[id]');
+    for(const el2 of all){
+      if(el2.getAttribute('id') === refId){ refEl = el2; break; }
+    }
+  }
+  if(!refEl) return null;
+  const tag = (refEl.tagName || '').toLowerCase().replace(/.*:/,'');
+  if(tag === 'lineargradient' || tag === 'radialgradient'){
+    // Collect all stop colors and average them or use first
+    let stops = Array.from(refEl.querySelectorAll('stop'));
+    if(stops.length === 0){
+      // Maybe it inherits from xlink:href
+      const href = refEl.getAttribute('xlink:href') || refEl.getAttribute('href');
+      if(href && href.startsWith('#')){
+        let baseGrad = doc.getElementById(href.slice(1));
+        if(!baseGrad){
+          const all2 = doc.querySelectorAll('[id]');
+          for(const e2 of all2){ if(e2.getAttribute('id')===href.slice(1)){baseGrad=e2;break;} }
+        }
+        if(baseGrad) stops = Array.from(baseGrad.querySelectorAll('stop'));
+      }
+      if(stops.length === 0) return null;
+    }
+    // Use midpoint stop color for best visual approximation
+    const midStop = stops[Math.floor(stops.length/2)];
+    const stopColor = getComputedProp(midStop,'stop-color') || midStop.getAttribute('stop-color') || '#000000';
+    const stopOp = parseFloat(getComputedProp(midStop,'stop-opacity') || midStop.getAttribute('stop-opacity') || '1');
+    return parseColor(stopColor, stopOp);
+  }
+  if(tag === 'pattern'){
+    // Use first filled child path color
+    const firstPath = refEl.querySelector('path,rect,circle,ellipse,polygon,polyline');
+    if(firstPath){
+      const fc = getComputedProp(firstPath,'fill') || firstPath.getAttribute('fill') || '#000000';
+      return parseColor(fc, 1);
+    }
+    return null;
+  }
+  if(tag === 'solidcolor'){
+    const sc = refEl.getAttribute('solid-color') || '#000000';
+    const so = parseFloat(refEl.getAttribute('solid-opacity') || '1');
+    return parseColor(sc, so);
+  }
+  return null;
+}
+
+// =====================================================
+// GRADIENT EXTRACTION — SVG → Alight Motion gradient
+// =====================================================
+function extractSvgGradient(el, svgEl){
+  const fill = getInheritedProp(el, 'fill', null) || 'black';
+  if(!fill.startsWith('url(')) return null;
+  const m = fill.match(/url\(["']?#([^"')]+)["']?\)/);
+  if(!m) return null;
+  const refId = m[1];
+  const doc = el.ownerDocument;
+  let refEl = doc.getElementById(refId) || symbolRegistry[refId];
+  if(!refEl){
+    const all = doc.querySelectorAll('[id]');
+    for(const e2 of all){ if(e2.getAttribute('id')===refId){refEl=e2;break;} }
+  }
+  if(!refEl) return null;
+  const tag = (refEl.tagName||'').toLowerCase().replace(/.*:/,'');
+  if(tag!=='lineargradient' && tag!=='radialgradient') return null;
+
+  // Get stops (may be in xlink:href base gradient)
+  let stops = Array.from(refEl.querySelectorAll('stop'));
+  if(stops.length===0){
+    const href = refEl.getAttribute('xlink:href') || refEl.getAttribute('href');
+    if(href && href.startsWith('#')){
+      let baseGrad = doc.getElementById(href.slice(1));
+      if(!baseGrad){ const all2=doc.querySelectorAll('[id]'); for(const e2 of all2){if(e2.getAttribute('id')===href.slice(1)){baseGrad=e2;break;}} }
+      if(baseGrad) stops = Array.from(baseGrad.querySelectorAll('stop'));
+    }
+  }
+  if(stops.length===0) return null;
+
+  // Get start and end stop colors (with opacity)
+  const getStopColor = (stop) => {
+    const sc = getComputedProp(stop,'stop-color') || stop.getAttribute('stop-color') || '#000000';
+    const so = parseFloat(getComputedProp(stop,'stop-opacity') || stop.getAttribute('stop-opacity') || '1');
+    return parseColor(sc, so) || '#ff000000';
+  };
+  const startColor = getStopColor(stops[0]);
+  const endColor = getStopColor(stops[stops.length-1]);
+
+  // Determine gradient type
+  let gradType = 'linear';
+  if(tag==='radialgradient') gradType='radial';
+
+  // Get gradient coordinates
+  // SVG uses gradientUnits="objectBoundingBox" by default → values are 0..1 fractions
+  // AM gradient start/end are also 0..1 fractions of the object bounding box
+  const gradUnits = refEl.getAttribute('gradientUnits') || 'objectBoundingBox';
+
+  let startStr = '0.5,0.0';
+  let endStr = '0.5,1.0';
+
+  if(tag==='lineargradient'){
+    let x1 = parseFloat(refEl.getAttribute('x1') || '0');
+    let y1 = parseFloat(refEl.getAttribute('y1') || '0');
+    let x2 = parseFloat(refEl.getAttribute('x2') || '1');
+    let y2 = parseFloat(refEl.getAttribute('y2') || '1');
+    if(gradUnits==='userSpaceOnUse'){
+      // Normalize to 0..1 using SVG canvas size
+      const vw = svgWidth || 1080;
+      const vh = svgHeight || 1080;
+      x1/=vw; y1/=vh; x2/=vw; y2/=vh;
+    }
+    startStr = `${x1.toFixed(6)},${y1.toFixed(6)}`;
+    endStr   = `${x2.toFixed(6)},${y2.toFixed(6)}`;
+  } else if(tag==='radialgradient'){
+    let cx = parseFloat(refEl.getAttribute('cx') || '0.5');
+    let cy = parseFloat(refEl.getAttribute('cy') || '0.5');
+    let fx = parseFloat(refEl.getAttribute('fx') || cx.toString());
+    let fy = parseFloat(refEl.getAttribute('fy') || cy.toString());
+    if(gradUnits==='userSpaceOnUse'){
+      const vw = svgWidth||1080; const vh = svgHeight||1080;
+      cx/=vw; cy/=vh; fx/=vw; fy/=vh;
+    }
+    startStr = `${fx.toFixed(6)},${fy.toFixed(6)}`;
+    endStr   = `${cx.toFixed(6)},${cy.toFixed(6)}`;
+  }
+
+  return { type: gradType, startColor, endColor, start: startStr, end: endStr };
+}
+
+// =====================================================
+// SVG MIX-BLEND-MODE → AM BLENDING MAP
+// =====================================================
+const SVG_BLEND_TO_AM = {
+  'normal': null,          // no attribute needed
+  'multiply': 'multiply',
+  'screen': 'screen',
+  'overlay': 'overlay',
+  'darken': 'darken',
+  'lighten': 'lighten',
+  'color-dodge': 'color-dodge',
+  'color-burn': 'color-burn',
+  'hard-light': 'hard-light',
+  'soft-light': 'soft-light',
+  'difference': 'diff',
+  'exclusion': 'exclusion',
+  'hue': 'hue',
+  'saturation': 'saturation',
+  'color': 'color',
+  'luminosity': 'luminance',
+  // extras already in AM naming:
+  'linear-burn': 'linear-burn',
+  'linear-dodge': 'linear-dodge',
+  'darker-color': 'darker-color',
+  'lighter-color': 'lighter-color',
+  'soft-overlay': 'soft-overlay',
+  'vivid-light': 'vivid-light',
+  'linear-light': 'linear-light',
+  'pin-light': 'pin-light',
+  'subtract': 'subtract',
+  'divide': 'divide',
+  'mask': 'mask',
+  'exclude': 'exclude',
+  'diff': 'diff',
+  'luminance': 'luminance',
+};
+
+// Get SVG element blending mode → AM blending value
+function getBlending(el){
+  const bv = getInheritedProp(el, 'mix-blend-mode', null);
+  if(!bv || bv === 'normal') return null;
+  const lower = bv.toLowerCase().trim();
+  return SVG_BLEND_TO_AM[lower] || lower; // pass through if not in map
+}
+
+// =====================================================
+// SVG OPACITY → alpha byte in ARGB color
+// =====================================================
+// Returns opacity 0..1 from element (combined opacity attribute + fill-opacity etc)
+function getElementOpacity(el){
+  const op = parseFloat(getInheritedProp(el,'opacity',null) || '1');
+  return Math.max(0, Math.min(1, op));
+}
+
+// Apply opacity override to an ARGB hex color string (#aarrggbb)
+function applyOpacityToColor(argbHex, opacityFactor){
+  if(!argbHex || opacityFactor >= 1) return argbHex;
+  // Parse current alpha
+  const hex = argbHex.replace('#','');
+  if(hex.length < 8) return argbHex;
+  const currentAlpha = parseInt(hex.slice(0,2), 16) / 255;
+  const newAlpha = Math.round(Math.max(0, Math.min(1, currentAlpha * opacityFactor)) * 255);
+  return '#' + newAlpha.toString(16).padStart(2,'0') + hex.slice(2);
+}
+
+// =====================================================
+// SVG CLIP-PATH → AM clippingMask
+// =====================================================
+function hasClipPath(el){
+  // Check clip-path attribute or CSS property
+  const cp = getInheritedProp(el, 'clip-path', null) || el.getAttribute('clip-path');
+  return !!(cp && cp !== 'none');
+}
+
+// =====================================================
+// SVG FILTER feDropShadow → AM <shadow>
+// =====================================================
+function extractShadow(el, svgDoc){
+  // Check filter attribute
+  const filterRef = getInheritedProp(el, 'filter', null) || el.getAttribute('filter');
+  if(!filterRef || !filterRef.startsWith('url(')) return null;
+
+  const m = filterRef.match(/url\(["']?#([^"')]+)["']?\)/);
+  if(!m) return null;
+  const refId = m[1];
+
+  let filterEl = svgDoc.getElementById(refId) || symbolRegistry[refId];
+  if(!filterEl){
+    const all = svgDoc.querySelectorAll('[id]');
+    for(const e2 of all){ if(e2.getAttribute('id')===refId){filterEl=e2;break;} }
+  }
+  if(!filterEl) return null;
+
+  // Look for feDropShadow or feMerge-based drop shadow
+  const feDS = filterEl.querySelector('feDropShadow');
+  if(feDS){
+    const dx = parseFloat(feDS.getAttribute('dx') || '0');
+    const dy = parseFloat(feDS.getAttribute('dy') || '0');
+    const stdDev = parseFloat(feDS.getAttribute('stdDeviation') || '4');
+    const floodColor = feDS.getAttribute('flood-color') || '#000000';
+    const floodOp = parseFloat(feDS.getAttribute('flood-opacity') || '1');
+    const color = parseColor(floodColor, floodOp) || '#ff000000';
+    return {
+      direction: 'outside',
+      color: color,
+      size: stdDev * 2.5, // approximate: stdDev → size
+      offsetX: dx,
+      offsetY: dy
+    };
+  }
+
+  // Try feGaussianBlur + feOffset combo (common Inkscape pattern)
+  const feGB = filterEl.querySelector('feGaussianBlur');
+  const feOff = filterEl.querySelector('feOffset');
+  const feFlood = filterEl.querySelector('feFlood');
+  if(feGB){
+    const stdDev = parseFloat((feGB.getAttribute('stdDeviation') || '4').split(/\s+/)[0]);
+    const dx = feOff ? parseFloat(feOff.getAttribute('dx') || '0') : 0;
+    const dy = feOff ? parseFloat(feOff.getAttribute('dy') || '0') : 0;
+    const floodColor = feFlood ? (feFlood.getAttribute('flood-color') || '#000000') : '#000000';
+    const floodOp = feFlood ? parseFloat(feFlood.getAttribute('flood-opacity') || '0.5') : 0.5;
+    const color = parseColor(floodColor, floodOp) || '#80000000';
+    return {
+      direction: 'outside',
+      color: color,
+      size: stdDev * 2.5,
+      offsetX: dx,
+      offsetY: dy
+    };
+  }
+
+  return null;
+}
+
+// Get style value — check computed (CSS class + inline + attribute)
+function getElemStyle(el, prop){
+  return getComputedProp(el, prop);
+}
+
+// Legacy alias for old code that uses getInheritedStyle
+function getInheritedStyle(el, prop){
+  return getInheritedProp(el, prop, null);
+}
+
+
+// =====================================================
+// PATH PARSING
+// =====================================================
+function tokenizePath(d){
+  const re=/([MmLlHhVvCcSsQqTtAaZz])|(-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/g;
+  const tokens=[];
+  let m;
+  while((m=re.exec(d))!==null){
+    if(m[1]) tokens.push({t:'cmd',v:m[1]});
+    else tokens.push({t:'num',v:parseFloat(m[2])});
+  }
+  return tokens;
+}
+
+function parsePath(d){
+  const tokens=tokenizePath(d);
+  const cmds=[];
+  let i=0;
+  while(i<tokens.length){
+    if(tokens[i].t!=='cmd'){i++;continue;}
+    const cmd=tokens[i].v; i++;
+    const nums=[];
+    while(i<tokens.length&&tokens[i].t==='num'){nums.push(tokens[i].v);i++;}
+    const sizes={M:2,m:2,L:2,l:2,H:1,h:1,V:1,v:1,C:6,c:6,S:4,s:4,Q:4,q:4,T:2,t:2,A:7,a:7,Z:0,z:0};
+    const sz=sizes[cmd]||0;
+    if(sz===0){cmds.push({cmd,nums:[]});}
+    else{
+      for(let j=0;j<nums.length||j===0;j+=Math.max(sz,1)){
+        cmds.push({cmd,nums:nums.slice(j,j+sz)});
+        if(sz===0||nums.length===0) break;
+      }
+    }
+  }
+  return cmds;
+}
+
+// =====================================================
+// ARC TO BEZIER
+// =====================================================
+function arcToBezier(x1,y1,rx,ry,xRot,large,sweep,x2,y2){
+  if(x1===x2&&y1===y2) return [];
+  rx=Math.abs(rx); ry=Math.abs(ry);
+  if(rx===0||ry===0) return [{type:'L',x:x2,y:y2}];
+  const cos=Math.cos(xRot),sin=Math.sin(xRot);
+  const dx=(x1-x2)/2, dy=(y1-y2)/2;
+  const x1p=cos*dx+sin*dy, y1p=-sin*dx+cos*dy;
+  let x1ps=x1p*x1p,y1ps=y1p*y1p,rxs=rx*rx,rys=ry*ry;
+  const lam=x1ps/rxs+y1ps/rys;
+  if(lam>1){const sl=Math.sqrt(lam);rx*=sl;ry*=sl;rxs=rx*rx;rys=ry*ry;}
+  const sg=(large===sweep)?-1:1;
+  const sq=Math.max(0,(rxs*rys-rxs*y1ps-rys*x1ps)/(rxs*y1ps+rys*x1ps));
+  const co=sg*Math.sqrt(sq);
+  const cxp=co*rx*y1p/ry, cyp=-co*ry*x1p/rx;
+  const cx=cos*cxp-sin*cyp+(x1+x2)/2;
+  const cy=sin*cxp+cos*cyp+(y1+y2)/2;
+  const ux=(x1p-cxp)/rx,uy=(y1p-cyp)/ry;
+  const vx=(-x1p-cxp)/rx,vy=(-y1p-cyp)/ry;
+  const n1=Math.sqrt(ux*ux+uy*uy);
+  let theta1=Math.acos(Math.max(-1,Math.min(1,ux/n1)));
+  if(uy<0) theta1=-theta1;
+  const n2=Math.sqrt((ux*ux+uy*uy)*(vx*vx+vy*vy));
+  let dtheta=Math.acos(Math.max(-1,Math.min(1,(ux*vx+uy*vy)/n2)));
+  if(ux*vy-uy*vx<0) dtheta=-dtheta;
+  if(!sweep&&dtheta>0) dtheta-=2*Math.PI;
+  if(sweep&&dtheta<0) dtheta+=2*Math.PI;
+  const segs=Math.ceil(Math.abs(dtheta)/(Math.PI/2));
+  const dt=dtheta/segs;
+  const alpha=4/3*Math.tan(dt/4);
+  const res=[];
+  for(let i=0;i<segs;i++){
+    const t1=theta1+i*dt, t2=theta1+(i+1)*dt;
+    const p2x=cx+cos*rx*Math.cos(t2)-sin*ry*Math.sin(t2);
+    const p2y=cy+sin*rx*Math.cos(t2)+cos*ry*Math.sin(t2);
+    const d1x=(-cos*rx*Math.sin(t1)-sin*ry*Math.cos(t1));
+    const d1y=(-sin*rx*Math.sin(t1)+cos*ry*Math.cos(t1));
+    const d2x=(-cos*rx*Math.sin(t2)-sin*ry*Math.cos(t2));
+    const d2y=(-sin*rx*Math.sin(t2)+cos*ry*Math.cos(t2));
+    const p1x=cx+cos*rx*Math.cos(t1)-sin*ry*Math.sin(t1);
+    const p1y=cy+sin*rx*Math.cos(t1)+cos*ry*Math.sin(t1);
+    res.push({
+      type:'C',
+      x1:p1x+alpha*d1x, y1:p1y+alpha*d1y,
+      x2:p2x-alpha*d2x, y2:p2y-alpha*d2y,
+      x:p2x, y:p2y
+    });
+  }
+  return res;
+}
+
+// =====================================================
+// SHAPE → SVG PATH DATA  
+// =====================================================
+function circleToD(cx,cy,r){
+  const k=0.5522847498;
+  return `M${cx},${cy-r}C${cx+k*r},${cy-r},${cx+r},${cy-k*r},${cx+r},${cy}C${cx+r},${cy+k*r},${cx+k*r},${cy+r},${cx},${cy+r}C${cx-k*r},${cy+r},${cx-r},${cy+k*r},${cx-r},${cy}C${cx-r},${cy-k*r},${cx-k*r},${cy-r},${cx},${cy-r}Z`;
+}
+function ellipseToD(cx,cy,rx,ry){
+  const k=0.5522847498;
+  return `M${cx},${cy-ry}C${cx+k*rx},${cy-ry},${cx+rx},${cy-k*ry},${cx+rx},${cy}C${cx+rx},${cy+k*ry},${cx+k*rx},${cy+ry},${cx},${cy+ry}C${cx-k*rx},${cy+ry},${cx-rx},${cy+k*ry},${cx-rx},${cy}C${cx-rx},${cy-k*ry},${cx-k*rx},${cy-ry},${cx},${cy-ry}Z`;
+}
+function rectToD(x,y,w,h,rx=0,ry=0){
+  if(rx===0&&ry===0){
+    return `M${x},${y}L${x+w},${y}L${x+w},${y+h}L${x},${y+h}Z`;
+  }
+  rx=Math.min(rx,w/2); ry=Math.min(ry,h/2);
+  const k=0.5522847498;
+  return `M${x+rx},${y}L${x+w-rx},${y}C${x+w-rx*(1-k)},${y},${x+w},${y+ry*(1-k)},${x+w},${y+ry}L${x+w},${y+h-ry}C${x+w},${y+h-ry*(1-k)},${x+w-rx*(1-k)},${y+h},${x+w-rx},${y+h}L${x+rx},${y+h}C${x+rx*(1-k)},${y+h},${x},${y+h-ry*(1-k)},${x},${y+h-ry}L${x},${y+ry}C${x},${y+ry*(1-k)},${x+rx*(1-k)},${y},${x+rx},${y}Z`;
+}
+function polygonToD(points,close=true){
+  const pts=points.trim().split(/[\s,]+/);
+  if(pts.length<4) return '';
+  let d=`M${pts[0]},${pts[1]}`;
+  for(let i=2;i<pts.length;i+=2) d+=`L${pts[i]},${pts[i+1]}`;
+  if(close) d+='Z';
+  return d;
+}
+
+// =====================================================
+// TRANSFORM PATH → AM FORMAT
+// =====================================================
+function f(n){return parseFloat(n.toFixed(4));}
+
+function transformPathToAM(d, matrix, ox, oy){
+  const cmds=parsePath(d);
+  const parts=[];   // collect each segment as a string, join with ' ' at end
+  let cx=0,cy=0;
+  let subS=[0,0];
+  let prevCmd='';
+  let prevCtrl=[0,0];
+
+  const toAbs=(isAbs,x,y)=>isAbs?[x,y]:[cx+x,cy+y];
+  const tr=(x,y)=>{const p=matrix.pt(x,y);return [p.x-ox,p.y-oy];};
+
+  for(const {cmd,nums} of cmds){
+    const abs=cmd===cmd.toUpperCase();
+    switch(cmd.toUpperCase()){
+      case 'M':{
+        const [ax,ay]=toAbs(abs,nums[0],nums[1]);
+        const [tx,ty]=tr(ax,ay);
+        // Tutup sub-path sebelumnya jika belum ada Z
+        if(parts.length>0 && parts[parts.length-1]!=='Z'){
+          parts.push('Z');
+        }
+        parts.push(`M ${f(tx)} ${f(ty)}`);
+        subS=[ax,ay]; cx=ax; cy=ay;
+        break;
+      }
+      case 'L':{
+        const [ax,ay]=toAbs(abs,nums[0],nums[1]);
+        const [tx,ty]=tr(ax,ay);
+        parts.push(`L ${f(tx)} ${f(ty)}`);
+        cx=ax; cy=ay;
+        break;
+      }
+      case 'H':{
+        const ax=abs?nums[0]:cx+nums[0];
+        const [tx,ty]=tr(ax,cy);
+        parts.push(`L ${f(tx)} ${f(ty)}`);
+        cx=ax;
+        break;
+      }
+      case 'V':{
+        const ay=abs?nums[0]:cy+nums[0];
+        const [tx,ty]=tr(cx,ay);
+        parts.push(`L ${f(tx)} ${f(ty)}`);
+        cy=ay;
+        break;
+      }
+      case 'C':{
+        const [ax1,ay1]=toAbs(abs,nums[0],nums[1]);
+        const [ax2,ay2]=toAbs(abs,nums[2],nums[3]);
+        const [ax,ay]=toAbs(abs,nums[4],nums[5]);
+        const [tx1,ty1]=tr(ax1,ay1);
+        const [tx2,ty2]=tr(ax2,ay2);
+        const [tx,ty]=tr(ax,ay);
+        parts.push(`C ${f(tx1)} ${f(ty1)}, ${f(tx2)} ${f(ty2)}, ${f(tx)} ${f(ty)}`);
+        prevCtrl=[ax2,ay2]; cx=ax; cy=ay;
+        break;
+      }
+      case 'S':{
+        const [ax2,ay2]=toAbs(abs,nums[0],nums[1]);
+        const [ax,ay]=toAbs(abs,nums[2],nums[3]);
+        const isPrevC=['C','c','S','s'].includes(prevCmd);
+        const ax1=isPrevC?2*cx-prevCtrl[0]:cx;
+        const ay1=isPrevC?2*cy-prevCtrl[1]:cy;
+        const [tx1,ty1]=tr(ax1,ay1);
+        const [tx2,ty2]=tr(ax2,ay2);
+        const [tx,ty]=tr(ax,ay);
+        parts.push(`C ${f(tx1)} ${f(ty1)}, ${f(tx2)} ${f(ty2)}, ${f(tx)} ${f(ty)}`);
+        prevCtrl=[ax2,ay2]; cx=ax; cy=ay;
+        break;
+      }
+      case 'Q':{
+        const [qx,qy]=toAbs(abs,nums[0],nums[1]);
+        const [ax,ay]=toAbs(abs,nums[2],nums[3]);
+        const bx1=cx+2/3*(qx-cx); const by1=cy+2/3*(qy-cy);
+        const bx2=ax+2/3*(qx-ax); const by2=ay+2/3*(qy-ay);
+        const [tx1,ty1]=tr(bx1,by1);
+        const [tx2,ty2]=tr(bx2,by2);
+        const [tx,ty]=tr(ax,ay);
+        parts.push(`C ${f(tx1)} ${f(ty1)}, ${f(tx2)} ${f(ty2)}, ${f(tx)} ${f(ty)}`);
+        prevCtrl=[qx,qy]; cx=ax; cy=ay;
+        break;
+      }
+      case 'T':{
+        const [ax,ay]=toAbs(abs,nums[0],nums[1]);
+        const isPrevQ=['Q','q','T','t'].includes(prevCmd);
+        const qx=isPrevQ?2*cx-prevCtrl[0]:cx;
+        const qy=isPrevQ?2*cy-prevCtrl[1]:cy;
+        const bx1=cx+2/3*(qx-cx); const by1=cy+2/3*(qy-cy);
+        const bx2=ax+2/3*(qx-ax); const by2=ay+2/3*(qy-ay);
+        const [tx1,ty1]=tr(bx1,by1);
+        const [tx2,ty2]=tr(bx2,by2);
+        const [tx,ty]=tr(ax,ay);
+        parts.push(`C ${f(tx1)} ${f(ty1)}, ${f(tx2)} ${f(ty2)}, ${f(tx)} ${f(ty)}`);
+        prevCtrl=[qx,qy]; cx=ax; cy=ay;
+        break;
+      }
+      case 'A':{
+        const [ax,ay]=toAbs(abs,nums[5],nums[6]);
+        const beziers=arcToBezier(cx,cy,nums[0],nums[1],nums[2]*Math.PI/180,nums[3],nums[4],ax,ay);
+        for(const bz of beziers){
+          if(bz.type==='L'){
+            const [tx,ty]=tr(bz.x,bz.y);
+            parts.push(`L ${f(tx)} ${f(ty)}`);
+          } else {
+            const [tx1,ty1]=tr(bz.x1,bz.y1);
+            const [tx2,ty2]=tr(bz.x2,bz.y2);
+            const [tx,ty]=tr(bz.x,bz.y);
+            parts.push(`C ${f(tx1)} ${f(ty1)}, ${f(tx2)} ${f(ty2)}, ${f(tx)} ${f(ty)}`);
+          }
+        }
+        cx=ax; cy=ay;
+        break;
+      }
+      case 'Z':{
+        // Always close the sub-path explicitly, then ensure next M starts fresh
+        parts.push('Z');
+        cx=subS[0]; cy=subS[1];
+        break;
+      }
+    }
+    prevCmd=cmd;
+    if(!['C','c','S','s','Q','q','T','t'].includes(cmd)) prevCtrl=[cx,cy];
+  }
+
+  // Tutup kontur terakhir jika belum ada Z
+  if(parts.length>0 && parts[parts.length-1]!=='Z'){
+    parts.push('Z');
+  }
+
+  // Join with single space — guarantees clean token separation between ALL commands
+  // including Z followed immediately by M (next sub-path)
+  return parts.join(' ');
+}
+
+// =====================================================
+// ACCUMULATED TRANSFORM
+// =====================================================
+function getAccumTx(el){
+  const mats=[];
+  let cur=el;
+  while(cur&&cur.tagName&&cur.tagName.toLowerCase()!=='svg'){
+    const tx=cur.getAttribute&&cur.getAttribute('transform');
+    if(tx) mats.unshift(parseTx(tx));
+    cur=cur.parentElement;
+  }
+  let mat=new Mat2D();
+  for(const m of mats) mat=mat.mul(m);
+  return mat;
+}
+
+// =====================================================
+// ELEMENT CONVERTER — returns ARRAY (1 shape, multi-kontur tetap 1 shape)
+// =====================================================
+let shapeCounter=1;
+function convertElement(el, mat, ox, oy, colorOverride){
+  const tag=el.tagName.toLowerCase().replace(/.*:/,'');
+  let d='';
+
+  if(tag==='path'){
+    d=el.getAttribute('d')||'';
+    if(!d) return [];
+  } else if(tag==='rect'){
+    const x=parseFloat(el.getAttribute('x')||'0');
+    const y=parseFloat(el.getAttribute('y')||'0');
+    const w=parseFloat(el.getAttribute('width')||'0');
+    const h=parseFloat(el.getAttribute('height')||'0');
+    const rx=parseFloat(el.getAttribute('rx')||'0');
+    const ry=parseFloat(el.getAttribute('ry')||rx.toString()||'0');
+    if(w===0||h===0) return [];
+    d=rectToD(x,y,w,h,rx,ry);
+  } else if(tag==='circle'){
+    const cx=parseFloat(el.getAttribute('cx')||'0');
+    const cy=parseFloat(el.getAttribute('cy')||'0');
+    const r=parseFloat(el.getAttribute('r')||'0');
+    if(r===0) return [];
+    d=circleToD(cx,cy,r);
+  } else if(tag==='ellipse'){
+    const cx=parseFloat(el.getAttribute('cx')||'0');
+    const cy=parseFloat(el.getAttribute('cy')||'0');
+    const rx=parseFloat(el.getAttribute('rx')||'0');
+    const ry=parseFloat(el.getAttribute('ry')||'0');
+    if(rx===0||ry===0) return [];
+    d=ellipseToD(cx,cy,rx,ry);
+  } else if(tag==='polygon'){
+    d=polygonToD(el.getAttribute('points')||'',true);
+    if(!d) return [];
+  } else if(tag==='polyline'){
+    d=polygonToD(el.getAttribute('points')||'',false);
+    if(!d) return [];
+  } else if(tag==='line'){
+    const x1=el.getAttribute('x1')||'0';const y1=el.getAttribute('y1')||'0';
+    const x2=el.getAttribute('x2')||'0';const y2=el.getAttribute('y2')||'0';
+    d=`M${x1},${y1}L${x2},${y2}`;
+  } else {
+    return [];
+  }
+
+  // Check for SVG gradient fill
+  const rawFillVal = getInheritedProp(el,'fill',null) || 'black';
+  const isGradFill = rawFillVal.startsWith('url(');
+  const svgGrad = isGradFill ? extractSvgGradient(el, el.ownerDocument.querySelector('svg')) : null;
+  // gradOverride from UI (global)
+  const activeGradOverride = window._gradTypeOverride || 'off';
+
+  let fillColor;
+  let gradient = null;
+
+  if(activeGradOverride !== 'off'){
+    // User-defined gradient override
+    fillColor = '#ff000000'; // transparent base
+    gradient = {
+      type: activeGradOverride,
+      startColor: window._gradStartColor || '#ffff4444',
+      endColor: window._gradEndColor || '#ffffffff',
+      start: '0.548056,-0.134085',
+      end: '0.532882,1.516264'
+    };
+  } else if(svgGrad){
+    // Use extracted SVG gradient
+    fillColor = svgGrad.startColor; // fallback color
+    gradient = svgGrad;
+  } else {
+    fillColor = getFill(el, colorOverride);
+  }
+
+  const strokeRaw = getStroke(el);
+  const hasFill = !!fillColor || !!gradient;
+  const hasStroke = !!strokeRaw;
+  if(!hasFill && !hasStroke) return [];
+
+  const amPath=transformPathToAM(d,mat,ox,oy);
+  if(!amPath) return [];
+
+  // Build strokeInfo for AM format: <path-stroke direction="..." end-size="...">
+  let strokeInfo = null;
+  if(hasStroke){
+    const dir = document.getElementById('strokeDirection')?.value || 'centered';
+    const endSz = parseFloat(document.getElementById('strokeEndSize')?.value || '1.5');
+    strokeInfo = {
+      color: strokeRaw.color,
+      direction: dir,
+      endSize: endSz
+    };
+  }
+
+  // ── BLENDING ──────────────────────────────────────────
+  const blendOverride = document.getElementById('blendingOverride')?.value || 'off';
+  let blending = null;
+  if(blendOverride !== 'off' && blendOverride !== 'normal'){
+    blending = blendOverride;
+  } else if(blendOverride === 'off'){
+    blending = getBlending(el); // read from SVG mix-blend-mode
+  }
+
+  // ── CLIPPING MASK ──────────────────────────────────────
+  const chkClip = document.getElementById('chkClipping')?.checked || false;
+  const svgHasClip = hasClipPath(el);
+  const useClipping = chkClip || svgHasClip;
+
+  // ── OPACITY ───────────────────────────────────────────
+  const opacitySlider = parseFloat(document.getElementById('opacityOverride')?.value ?? '1');
+  const svgOpacity = getElementOpacity(el);
+  // Apply both SVG element opacity and override slider
+  const finalOpacity = (opacitySlider < 1) ? opacitySlider : svgOpacity;
+  // Bake opacity into fillColor alpha
+  if(fillColor && finalOpacity < 1){
+    fillColor = applyOpacityToColor(fillColor, finalOpacity);
+  }
+
+  // ── SHADOW ────────────────────────────────────────────
+  const chkShadow = document.getElementById('chkShadow')?.checked || false;
+  let shadowInfo = null;
+  if(chkShadow){
+    // From UI controls
+    const sc = document.getElementById('shadowColorHex')?.value || '#000000';
+    const sz = parseFloat(document.getElementById('shadowSize')?.value || '20');
+    const ox2 = parseFloat(document.getElementById('shadowOffsetX')?.value || '0');
+    const oy2 = parseFloat(document.getElementById('shadowOffsetY')?.value || '0');
+    const dir = document.getElementById('shadowDirection')?.value || 'outside';
+    const scColor = parseColor(sc, 1) || '#ff000000';
+    shadowInfo = { direction: dir, color: scColor, size: sz, offsetX: ox2, offsetY: oy2 };
+  } else {
+    // Try to extract from SVG filter
+    shadowInfo = extractShadow(el, el.ownerDocument);
+  }
+
+  const label=`${tag.charAt(0).toUpperCase()+tag.slice(1)} ${shapeCounter}`;
+  const shape={
+    id: 256699800 + shapeCounter++,
+    label,
+    fillType: gradient ? 'gradient' : (hasFill ? 'color' : 'none'),
+    fillColor: fillColor || undefined,
+    gradient: gradient || undefined,
+    strokeInfo: strokeInfo || undefined,
+    blending: blending || undefined,
+    clippingMask: useClipping || undefined,
+    shadowInfo: shadowInfo || undefined,
+    opacity: (finalOpacity < 1) ? finalOpacity : undefined,
+    path: amPath
+  };
+  return [shape];
+}
+
+// =====================================================
+// SVG TRAVERSAL — Universal
+// =====================================================
+const SKIP_TAGS=new Set(['defs','clippath','mask','marker','title','desc','style','metadata','filter','lineargradient','radialgradient','pattern','stop']);
+// symbol and pattern need special handling — not in skip set
+
+// Symbol registry: id → element (for <use> resolution)
+let symbolRegistry = {};
+let useDepth = 0; // prevent infinite recursion
+
+function buildSymbolRegistry(svgDoc){
+  symbolRegistry = {};
+  // Register all elements with id — including gradients deep inside defs
+  const allIds = svgDoc.querySelectorAll('[id]');
+  for(const el of allIds){
+    const id = el.getAttribute('id');
+    if(id) symbolRegistry[id] = el;
+  }
+}
+
+function traverse(el, shapes, log, colorOverride, parentMat){
+  const tag=(el.tagName||'').toLowerCase().replace(/.*:/,'');
+
+  // Skip defs, clippath, masks etc — but NOT their children indirectly
+  // clippath: skip the clippath element itself but its contents are referenced elsewhere
+  if(SKIP_TAGS.has(tag)) return;
+
+  // Handle display:none / visibility:hidden
+  if(!isVisible(el)) return;
+
+  // Handle nested <svg> elements (SVG fragments from icon libraries)
+  if(tag === 'svg' && parentMat !== undefined){
+    // nested svg — treat as group, apply its viewBox transform
+    const vb = el.getAttribute('viewBox');
+    const xAttr = parseFloat(el.getAttribute('x') || '0');
+    const yAttr = parseFloat(el.getAttribute('y') || '0');
+    const wAttr = parseFloat((el.getAttribute('width') || '0').replace(/[^\d.]/g,''));
+    const hAttr = parseFloat((el.getAttribute('height') || '0').replace(/[^\d.]/g,''));
+    let nestedMat = new Mat2D(1,0,0,1,xAttr,yAttr);
+    if(vb && wAttr && hAttr){
+      const vbp = vb.split(/[\s,]+/).map(Number);
+      const sx = wAttr/vbp[2], sy = hAttr/vbp[3];
+      nestedMat = nestedMat.mul(new Mat2D(sx,0,0,sy,-vbp[0]*sx,-vbp[1]*sy));
+    }
+    for(const child of el.children) traverse(child, shapes, log, colorOverride, nestedMat);
+    return;
+  }
+
+  // <image> — skip with hint
+  if(tag === 'image'){
+    log.push({t:'skip',msg:`&lt;image&gt; — raster image tidak bisa dikonversi ke path`});
+    return;
+  }
+  // <text> elements — skip with hint
+  if(['text','tspan','textpath','flowroot','flowpara'].includes(tag)){
+    log.push({t:'skip',msg:`&lt;${tag}&gt; — text tidak didukung. Konversi text ke path di Inkscape/Illustrator terlebih dahulu`});
+    return;
+  }
+
+  // <switch> — try first child that has no requiredFeatures issues
+  if(tag === 'switch'){
+    for(const child of el.children){
+      traverse(child, shapes, log, colorOverride);
+    }
+    return;
+  }
+
+  // <use> — resolve href/xlink:href
+  if(tag === 'use'){
+    if(useDepth > 8){
+      log.push({t:'skip',msg:`&lt;use&gt; — terlalu dalam rekursi, dilewati`});
+      return;
+    }
+    const href = el.getAttribute('href') || el.getAttribute('xlink:href');
+    const ux = parseFloat(el.getAttribute('x') || '0');
+    const uy = parseFloat(el.getAttribute('y') || '0');
+    const useTx = el.getAttribute('transform') || '';
+    if(href && href.startsWith('#')){
+      const refId = href.slice(1);
+      const ref = el.ownerDocument.getElementById(refId) || symbolRegistry[refId];
+      if(ref){
+        useDepth++;
+        // If ref is a <symbol>, it may have its own viewBox
+        const refTag = (ref.tagName||'').toLowerCase().replace(/.*:/,'');
+        if(refTag === 'symbol'){
+          // Create a synthetic group with the use's position
+          const fakeSvg = el.ownerDocument.createElementNS('http://www.w3.org/2000/svg','g');
+          fakeSvg.setAttribute('transform', `translate(${ux},${uy})${useTx?' '+useTx:''}`);
+          for(const child of ref.children){
+            traverse(child, shapes, log, colorOverride);
+          }
+        } else {
+          traverse(ref, shapes, log, colorOverride);
+        }
+        useDepth--;
+      } else {
+        log.push({t:'skip',msg:`&lt;use&gt; href="#${refId}" tidak ditemukan`});
+      }
+    } else if(href){
+      log.push({t:'skip',msg:`&lt;use&gt; — href eksternal "${href}" tidak didukung`});
+    }
+    return;
+  }
+
+  // Shape elements
+  if(['path','rect','circle','ellipse','polygon','polyline','line'].includes(tag)){
+    // Apply canvas scale matrix on top of element's own accumulated transform
+    const elemMat = getAccumTx(el);
+    const scaleMat = window._canvasScaleMat || new Mat2D();
+    const mat = scaleMat.mul(elemMat);
+    const ox = window._canvasOx !== undefined ? window._canvasOx : 540;
+    const oy = window._canvasOy !== undefined ? window._canvasOy : 540;
+    try {
+      const newShapes=convertElement(el,mat,ox,oy,colorOverride);
+      if(newShapes.length===0){
+        // Check why — is it fill:none or fill:url that couldn't resolve?
+        const rawFill = getInheritedProp(el,'fill',null) || 'black';
+        if(rawFill === 'none'){
+          log.push({t:'skip',msg:`Skip &lt;${tag}&gt; — fill="none" dan tidak ada stroke`});
+        } else if(rawFill.startsWith('url(')){
+          log.push({t:'skip',msg:`Skip &lt;${tag}&gt; — gradient fill tidak bisa di-resolve: ${rawFill.slice(0,40)}`});
+        } else {
+          log.push({t:'skip',msg:`Skip &lt;${tag}&gt; — tidak ada fill/stroke yang valid`});
+        }
+      } else {
+        for(const shape of newShapes){
+          shapes.push(shape);
+          const rawFill2 = getInheritedProp(el,'fill',null) || '';
+          const gradNote = shape.gradient ? ` [gradient:${shape.gradient.type}]` : (rawFill2.startsWith('url(') ? ' [gradient→solid]' : '');
+          const strokeNote = shape.strokeInfo ? `+stroke(${shape.strokeInfo.direction})` : '';
+          const blendNote = shape.blending ? ` [blend:${shape.blending}]` : '';
+          const clipNote = shape.clippingMask ? ' [clip✓]' : '';
+          const shadowNote = shape.shadowInfo ? ` [shadow:${shape.shadowInfo.direction}]` : '';
+          const opNote = shape.opacity !== undefined ? ` [op:${shape.opacity.toFixed(2)}]` : '';
+          log.push({t:'ok',msg:`✓ &lt;${tag}&gt; → Shape ${shapes.length} "${shape.label}" (${shape.fillType==='color'||shape.fillType==='gradient'?shape.fillType:''}${strokeNote})${gradNote}${blendNote}${clipNote}${shadowNote}${opNote}`});
+        }
+      }
+    } catch(e){
+      log.push({t:'err',msg:`Error pada &lt;${tag}&gt;: ${e.message}`});
+    }
+  }
+
+  for(const child of el.children) traverse(child, shapes, log, colorOverride);
+}
+
+// =====================================================
+// AM XML GENERATOR
+// =====================================================
+function genAMXML(shapes, width, height, title='Converted SVG'){
+  const now=new Date().toISOString().replace('T',' ').slice(0,16);
+  const ts=Date.now();
+  // Read canvas settings from UI
+  const canvasW = getCanvasW();
+  const canvasH = getCanvasH();
+  const fps = parseInt(document.getElementById('canvasFps')?.value || '30');
+  const bgHex = document.getElementById('canvasBgHex')?.value.trim() || '#000000';
+  const bgAM = hexToAMBgColor(bgHex);
+  let xml=`<?xml version='1.0' encoding='UTF-8' ?>\n`;
+  xml+=`<scene title="${escXml(title)}" width="${canvasW}" height="${canvasH}" exportWidth="${canvasW}" exportHeight="${canvasH}" precompose="dynamicResolution" bgcolor="${bgAM}" totalTime="2032" fps="${fps}" modifiedTime="${ts}" amver="1028425" ffver="106" am="com.alightcreative.motion/5.0.273.1028425" amplatform="android" retime="freeze" retimeAdaptFPS="false">\n`;
+  for(const s of shapes){
+    // Determine fillType: gradient > color > none
+    const ft = s.gradient ? 'gradient' : (s.fillType || 'none');
+    xml+=`  <shape id="${s.id}" label="${escXml(s.label)}" startTime="0" endTime="2032" fillType="${ft}" mediaFillMode="fill"`;
+    // clippingMask attribute
+    if(s.clippingMask) xml+=` clippingMask="true"`;
+    // blending attribute
+    if(s.blending) xml+=` blending="${s.blending}"`;
+    xml+=`>\n`;
+    xml+=`    <transform>\n`;
+    xml+=`      <location value="${s.cx||getCanvasW()/2}.000000,${s.cy||getCanvasH()/2}.000000,0.000000" />\n`;
+    // opacity in transform if < 1
+    if(s.opacity !== undefined) xml+=`      <opacity value="${s.opacity.toFixed(6)}" />\n`;
+    xml+=`    </transform>\n`;
+    if(s.fillColor) xml+=`    <fillColor value="${s.fillColor}" />\n`;
+    // Gradient fill
+    if(s.gradient){
+      const g=s.gradient;
+      xml+=`    <gradient type="${g.type}" startColor="${g.startColor}" endColor="${g.endColor}" start="${g.start}" end="${g.end}" />\n`;
+    }
+    // Shadow — AM format: <shadow direction="outside"><color/><size/><offset/></shadow>
+    if(s.shadowInfo){
+      const sh=s.shadowInfo;
+      xml+=`    <shadow direction="${sh.direction}">\n`;
+      xml+=`      <color value="${sh.color}" />\n`;
+      xml+=`      <size value="${sh.size.toFixed(6)}" />\n`;
+      xml+=`      <offset value="${sh.offsetX.toFixed(6)},${sh.offsetY.toFixed(6)}" />\n`;
+      xml+=`    </shadow>\n`;
+    }
+    // Stroke — AM format: <path-stroke direction="centered" end-size="1.5"><color value="#ffffffff"/></path-stroke>
+    if(s.strokeInfo){
+      const si=s.strokeInfo;
+      xml+=`    <path-stroke direction="${si.direction}" end-size="${si.endSize.toFixed(6)}">\n`;
+      xml+=`      <color value="${si.color}" />\n`;
+      xml+=`    </path-stroke>\n`;
+    }
+    xml+=`    <path d="${escXml(s.path)}" />\n`;
+    xml+=`  </shape>\n`;
+  }
+  xml+=`</scene>`;
+  return xml;
+}
+
+function escXml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// =====================================================
+// CANVAS SETTINGS HELPERS
+// =====================================================
+function getCanvasW(){
+  return parseInt(document.getElementById('canvasW')?.value || '1080') || 1080;
+}
+function getCanvasH(){
+  return parseInt(document.getElementById('canvasH')?.value || '1080') || 1080;
+}
+
+function hexToAMBgColor(hex){
+  // Convert #rrggbb or #aarrggbb to AM #aarrggbb
+  hex = (hex||'#000000').replace('#','').trim();
+  if(hex.length === 6) return '#ff' + hex;
+  if(hex.length === 8) return '#' + hex;
+  return '#ff000000';
+}
+
+let _activePreset = '1:1';
+function setCanvasPreset(w, h, label){
+  document.getElementById('canvasW').value = w;
+  document.getElementById('canvasH').value = h;
+  _activePreset = label;
+  updateCanvasInfo();
+  // Highlight active button
+  document.querySelectorAll('.canvas-preset-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if(btn.textContent.trim() === label) btn.classList.add('active');
+  });
+}
+
+function onCanvasDimChange(){
+  // Deactivate preset when user manually edits
+  _activePreset = 'custom';
+  document.querySelectorAll('.canvas-preset-btn').forEach(btn => btn.classList.remove('active'));
+  updateCanvasInfo();
+}
+
+function syncBgColor(val){
+  document.getElementById('canvasBgHex').value = val;
+  updateCanvasInfo();
+}
+
+function syncBgHex(val){
+  val = val.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(val)){
+    document.getElementById('canvasBgPicker').value = val;
+  }
+  updateCanvasInfo();
+}
+
+function updateCanvasInfo(){
+  const w = getCanvasW(), h = getCanvasH();
+  const fps = document.getElementById('canvasFps')?.value || '30';
+  const bg = document.getElementById('canvasBgHex')?.value || '#000000';
+  const badge = document.getElementById('canvasInfoBadge');
+  if(badge) badge.textContent = `📐 ${w} × ${h} px · ${fps}fps · bg ${bg}`;
+}
+
+// =====================================================
+// UI STATE
+// =====================================================
+let svgDoc=null;
+let amXml='';
+let svgWidth=1080, svgHeight=1080;
+let colorOverride=null;
+
+function getProjectName(){
+  const v=document.getElementById('projectName').value.trim();
+  return v||'SVG Import';
+}
+function clearColorOverride(){
+  colorOverride=null;
+  document.getElementById('colorHex').value='';
+  document.getElementById('colorPicker').value='#000000';
+}
+
+function addLog(type,msg){
+  const box=document.getElementById('logBox');
+  const entry=document.createElement('div');
+  entry.className=`log-entry log-${type}`;
+  const labels={ok:'OK',skip:'SKIP',err:'ERR',info:'INFO'};
+  entry.innerHTML=`<span class="tag">${labels[type]||type.toUpperCase()}</span><span>${msg}</span>`;
+  box.appendChild(entry);
+  box.scrollTop=box.scrollHeight;
+}
+function clearLog(){
+  document.getElementById('logBox').innerHTML='';
+}
+
+function highlightXml(xml){
+  return xml
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(&lt;\/?[a-z][^&\s]*)/g,'<span class="kw">$1</span>')
+    .replace(/([a-zA-Z:]+)=(&quot;[^&]*&quot;)/g,'<span class="attr">$1</span>=<span class="val">$2</span>')
+    .replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="cmt">$1</span>');
+}
+
+function showStats(shapes,skipped,xml){
+  document.getElementById('statsRow').style.display='flex';
+  document.getElementById('statShapes').textContent=shapes;
+  document.getElementById('statSkipped').textContent=skipped;
+  const bytes=new Blob([xml]).size;
+  document.getElementById('statSize').textContent=bytes<1024?bytes+'B':Math.round(bytes/1024)+'KB';
+}
+
+// =====================================================
+// FILE HANDLING
+// =====================================================
+function loadSVG(file){
+  const reader=new FileReader();
+  reader.onload=e=>{processSVGText(e.target.result, file.name);};
+  reader.readAsText(file);
+}
+
+function processSVGText(text, filename){
+  try {
+    // Pre-process: fix common SVG quirks
+    // 1. Some SVGs use XML namespace prefixes not understood by DOMParser in HTML mode
+    let cleaned = text;
+    // 2. Ensure proper XML
+    const parser=new DOMParser();
+    let doc=parser.parseFromString(cleaned,'image/svg+xml');
+    let errNode=doc.querySelector('parsererror');
+    if(errNode){
+      // Try parsing as HTML (some SVGs have quirks)
+      doc=parser.parseFromString('<div>'+cleaned+'</div>','text/html');
+      const svgInHtml=doc.querySelector('svg');
+      if(!svgInHtml){addLog('err','SVG parse error: '+errNode.textContent.slice(0,80));return;}
+      doc=parser.parseFromString(svgInHtml.outerHTML,'image/svg+xml');
+      errNode=doc.querySelector('parsererror');
+      if(errNode){addLog('err','SVG tidak bisa diparsing: format tidak valid');return;}
+    }
+    svgDoc=doc;
+
+    // Parse CSS stylesheets embedded in SVG
+    parseSvgStylesheet(doc);
+
+    // Build symbol/defs registry
+    buildSymbolRegistry(doc);
+
+    const svgEl=doc.querySelector('svg');
+    const vb=svgEl.getAttribute('viewBox');
+    if(vb){const p=vb.split(/[\s,]+/).map(Number);svgWidth=p[2]||1080;svgHeight=p[3]||1080;}
+    else{
+      svgWidth=parseFloat((svgEl.getAttribute('width')||'1080').replace(/[^\d.]/g,''))||1080;
+      svgHeight=parseFloat((svgEl.getAttribute('height')||'1080').replace(/[^\d.]/g,''))||1080;
+    }
+
+    // Detect SVG type for user info
+    const gs=doc.querySelectorAll('g[fill]');
+    let potraceHint=false;
+    for(const g of gs){
+      const tx=g.getAttribute('transform')||'';
+      if(tx.includes('scale')&&tx.includes('-')) potraceHint=true;
+    }
+    const hasStyle = doc.querySelector('style') !== null;
+    const hasGradient = doc.querySelector('linearGradient,radialGradient') !== null;
+    const hasSymbol = doc.querySelector('symbol') !== null;
+    const hasUse = doc.querySelector('use') !== null;
+    const hasText = doc.querySelector('text') !== null;
+    const hasClip = doc.querySelector('clipPath') !== null;
+    const hasFilter = doc.querySelector('filter') !== null;
+    const pathCount = doc.querySelectorAll('path').length;
+    const shapeCount = doc.querySelectorAll('path,rect,circle,ellipse,polygon,polyline,line').length;
+
+    const prev=document.getElementById('svgPreview');
+    prev.innerHTML='';
+    const clone=svgEl.cloneNode(true);
+    clone.style.cssText='width:100%;height:100%;max-width:100%;max-height:100%';
+    clone.setAttribute('width','100%');
+    clone.setAttribute('height','100%');
+    prev.appendChild(clone);
+
+    clearLog();
+    addLog('info',`File: <b>${filename}</b>`);
+    addLog('info',`Dimensi: ${svgWidth}×${svgHeight} | Total shapes: ${shapeCount} | Paths: ${pathCount}`);
+    if(potraceHint) addLog('info','✅ Terdeteksi SVG Potrace — inherited fill didukung');
+    if(hasStyle) addLog('info','✅ CSS stylesheet terdeteksi — class/id style didukung');
+    if(hasGradient) addLog('info','⚠️ Gradient terdeteksi — akan di-flatten ke warna solid');
+    if(hasSymbol) addLog('info','✅ &lt;symbol&gt; terdeteksi — akan di-resolve otomatis');
+    if(hasUse) addLog('info','✅ &lt;use&gt; references terdeteksi — akan di-resolve otomatis');
+    if(hasText) addLog('info','⚠️ &lt;text&gt; terdeteksi — text tidak bisa dikonversi (convert ke path dulu di Inkscape)');
+    if(hasClip) addLog('info','✅ &lt;clipPath&gt; terdeteksi — clip-path pada elemen akan dikonversi ke clippingMask="true"');
+    if(hasFilter){
+      const feDS = doc.querySelector('feDropShadow');
+      const feGB = doc.querySelector('feGaussianBlur');
+      if(feDS||feGB) addLog('info','✅ Filter shadow (feDropShadow/feGaussianBlur) terdeteksi — akan dikonversi ke &lt;shadow&gt;');
+      else addLog('info','⚠️ Filter SVG terdeteksi — filter non-shadow tidak didukung di AM');
+    }
+    const hasMixBlend = doc.querySelector('[style*="mix-blend"]') !== null || doc.querySelectorAll('[fill]').length > 0;
+    const blendEls = Array.from(doc.querySelectorAll('*')).filter(e => {
+      const s = e.getAttribute('style') || '';
+      return s.includes('mix-blend-mode');
+    });
+    if(blendEls.length > 0) addLog('info',`✅ mix-blend-mode terdeteksi (${blendEls.length} elemen) — akan dikonversi ke blending attribute AM`);
+
+    document.getElementById('btnConvert').disabled=false;
+    document.getElementById('xmlOutput').innerHTML='<span style="color:var(--text-dim)">// Klik Convert untuk memulai konversi...</span>';
+    amXml='';
+    document.getElementById('btnDownload').disabled=true;
+    document.getElementById('btnCopy').disabled=true;
+    document.getElementById('statsRow').style.display='none';
+  } catch(err){
+    addLog('err','Error: '+err.message);
+    console.error(err);
+  }
+}
+
+function doConvert(){
+  if(!svgDoc) return;
+  const btn=document.getElementById('btnConvert');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>MENGKONVERSI...';
+  clearLog();
+  shapeCounter=1;
+
+  // Read color override
+  const hexInput=document.getElementById('colorHex').value.trim();
+  if(hexInput){
+    colorOverride=parseColor(hexInput, 1);
+  } else {
+    colorOverride=null;
+  }
+
+  setTimeout(()=>{
+    try {
+      const shapes=[], log=[];
+      const svgEl=svgDoc.querySelector('svg');
+      addLog('info','Memulai konversi SVG → Alight Motion XML (Universal v4 — Fix Gradient IDs)...');
+      if(colorOverride) addLog('info',`Warna override aktif: ${colorOverride}`);
+
+      // --- Canvas scaling ---
+      const canvasW = getCanvasW();
+      const canvasH = getCanvasH();
+      const scaleX = canvasW / svgWidth;
+      const scaleY = canvasH / svgHeight;
+      // Use uniform scale (fit, not stretch) — keep aspect ratio
+      const uniformScale = Math.min(scaleX, scaleY);
+      // Offset so scaled SVG is centered on canvas
+      const scaledSvgW = svgWidth * uniformScale;
+      const scaledSvgH = svgHeight * uniformScale;
+      const offsetX = (canvasW - scaledSvgW) / 2;
+      const offsetY = (canvasH - scaledSvgH) / 2;
+      // Build canvas scale matrix: scale then translate
+      window._canvasScaleMat = new Mat2D(uniformScale, 0, 0, uniformScale, offsetX, offsetY);
+      window._canvasOx = canvasW / 2;
+      window._canvasOy = canvasH / 2;
+      if(uniformScale !== 1) addLog('info', `🎬 Canvas: ${canvasW}×${canvasH}px | SVG: ${svgWidth}×${svgHeight}px | Scale: ${uniformScale.toFixed(4)} | Offset: ${offsetX.toFixed(1)},${offsetY.toFixed(1)}`);
+      else addLog('info', `🎬 Canvas: ${canvasW}×${canvasH}px | SVG: ${svgWidth}×${svgHeight}px | Scale: 1:1`);
+
+      useDepth=0;
+      traverse(svgEl,shapes,log,colorOverride);
+
+      let skipped=0;
+      for(const entry of log){
+        addLog(entry.t,entry.msg);
+        if(entry.t==='skip') skipped++;
+      }
+
+      if(shapes.length===0){
+        addLog('err','Tidak ada shape yang berhasil dikonversi!');
+        btn.innerHTML='⚡ CONVERT KE ALIGHT MOTION XML';
+        btn.disabled=false;
+        return;
+      }
+
+      const title=getProjectName();
+      amXml=genAMXML(shapes, svgWidth, svgHeight, title);
+
+      const out=document.getElementById('xmlOutput');
+      out.innerHTML=highlightXml(amXml.slice(0,8000))+(amXml.length>8000?'\n<span style="color:var(--text-dim)">... (truncated untuk preview)</span>':'');
+
+      document.getElementById('btnDownload').disabled=false;
+      document.getElementById('btnCopy').disabled=false;
+      showStats(shapes.length,skipped,amXml);
+      addLog('ok',`✅ Konversi selesai! ${shapes.length} shape berhasil.`);
+
+    } catch(err){
+      addLog('err','Error konversi: '+err.message);
+      console.error(err);
+    }
+    btn.innerHTML='⚡ CONVERT KE ALIGHT MOTION XML';
+    btn.disabled=false;
+  },50);
+}
+
+function downloadFile(){
+  if(!amXml) return;
+  const blob=new Blob([amXml],{type:'text/xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const safeName=getProjectName().replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  a.href=url;a.download=safeName+'.xml';
+  a.click();URL.revokeObjectURL(url);
+  addLog('ok','File XML berhasil didownload: '+safeName+'.xml');
+}
+
+function copyXml(){
+  if(!amXml) return;
+  navigator.clipboard.writeText(amXml).then(()=>{
+    const btn=document.getElementById('btnCopy');
+    btn.textContent='✓ Copied!';
+    btn.style.color='var(--green)';
+    setTimeout(()=>{btn.textContent='Copy';btn.style.color='';},2000);
+  });
+}
+
+// =====================================================
+// SHADOW, CLIPPING, BLENDING, OPACITY UI
+// =====================================================
+document.getElementById('chkShadow').addEventListener('change', e=>{
+  document.getElementById('shadowPanel').style.display = e.target.checked ? '' : 'none';
+});
+document.getElementById('shadowSize').addEventListener('input', e=>{
+  document.getElementById('shadowSizeVal').textContent = e.target.value;
+});
+document.getElementById('opacityOverride').addEventListener('input', e=>{
+  document.getElementById('opacityVal').textContent = parseFloat(e.target.value).toFixed(2);
+});
+document.getElementById('shadowColorPicker').addEventListener('input', e=>{
+  document.getElementById('shadowColorHex').value = e.target.value;
+});
+document.getElementById('shadowColorHex').addEventListener('input', e=>{
+  const v = e.target.value.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('shadowColorPicker').value = v;
+});
+
+// =====================================================
+// GRADIENT OVERRIDE UI
+// =====================================================
+window._gradTypeOverride = 'off';
+window._gradStartColor = '#ffff4444';
+window._gradEndColor = '#ffffffff';
+
+function setGradType(type){
+  window._gradTypeOverride = type;
+  ['chipGradOff','chipGradLinear','chipGradRadial','chipGradSweep'].forEach(id=>{
+    document.getElementById(id).classList.remove('active');
+  });
+  const map = {off:'chipGradOff',linear:'chipGradLinear',radial:'chipGradRadial',sweep:'chipGradSweep'};
+  if(map[type]) document.getElementById(map[type]).classList.add('active');
+  document.getElementById('gradOverridePanel').style.display = (type==='off') ? 'none' : '';
+}
+setGradType('off');
+
+// Sync gradient color pickers
+function syncGradColors(){
+  window._gradStartColor = hexToAMColor(document.getElementById('gradStartHex').value.trim() || '#ff4444');
+  window._gradEndColor   = hexToAMColor(document.getElementById('gradEndHex').value.trim() || '#ffffff');
+}
+function hexToAMColor(h){
+  // Convert #rrggbb or #aarrggbb to #ffrrggbb (AM ARGB format)
+  h = h.replace('#','');
+  if(h.length===6) return '#ff'+h;
+  if(h.length===8) return '#'+h;
+  return '#ff'+h.padEnd(6,'0');
+}
+['gradStartPicker','gradStartHex','gradEndPicker','gradEndHex'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('input', e=>{
+    const isPicker = e.target.type==='color';
+    const isStart = id.includes('Start');
+    if(isPicker){
+      document.getElementById(isStart?'gradStartHex':'gradEndHex').value = e.target.value;
+    } else {
+      const v = e.target.value.trim();
+      if(/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById(isStart?'gradStartPicker':'gradEndPicker').value=v;
+    }
+    syncGradColors();
+  });
+});
+
+// Stroke color picker sync
+document.getElementById('strokeColorPicker').addEventListener('input',e=>{
+  document.getElementById('strokeColorHex').value=e.target.value;
+});
+document.getElementById('strokeColorHex').addEventListener('input',e=>{
+  const v=e.target.value.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('strokeColorPicker').value=v;
+});
+
+// =====================================================
+// COLOR PICKER SYNC
+// =====================================================
+document.getElementById('colorPicker').addEventListener('input',e=>{
+  document.getElementById('colorHex').value=e.target.value;
+  colorOverride=parseColor(e.target.value,1);
+});
+document.getElementById('colorHex').addEventListener('input',e=>{
+  const v=e.target.value.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(v)){
+    document.getElementById('colorPicker').value=v;
+    colorOverride=parseColor(v,1);
+  } else if(!v){
+    colorOverride=null;
+  }
+});
+
+// =====================================================
+// DROP ZONE & INPUT
+// =====================================================
+const dz=document.getElementById('dropzone');
+const fi=document.getElementById('fileInput');
+fi.addEventListener('change',e=>{if(e.target.files[0]) loadSVG(e.target.files[0]);});
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('drag-over');
+  const f=e.dataTransfer.files[0];
+  if(f&&(f.type==='image/svg+xml'||f.name.endsWith('.svg'))) loadSVG(f);
+  else addLog('err','Hanya file .svg yang diterima!');
+});
+document.getElementById('btnConvert').addEventListener('click',doConvert);
+
+// Canvas FPS change → update badge
+document.getElementById('canvasFps')?.addEventListener('change', updateCanvasInfo);
+// Init canvas badge
+updateCanvasInfo();
+</script>
+
+</body></html>
